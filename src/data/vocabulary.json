@@ -1,0 +1,529 @@
+{
+  "words": [
+    {
+      "category": "Basic Objects and Food",
+      "items": [
+        {
+          "word": "Apple",
+          "pronunciation": "ˈæp.əl",
+          "meaning": "A round fruit with red or green skin",
+          "hint": "Snow White's favorite fruit"
+        },
+        {
+          "word": "Bread",
+          "pronunciation": "bred",
+          "meaning": "A basic food made from flour, water, and yeast",
+          "hint": "You use it to make sandwiches"
+        },
+        {
+          "word": "Chair",
+          "pronunciation": "tʃeər",
+          "meaning": "A piece of furniture for sitting on",
+          "hint": "You sit on it at a desk"
+        },
+        {
+          "word": "Door",
+          "pronunciation": "dɔːr",
+          "meaning": "A movable barrier used to close off an entrance",
+          "hint": "You open and close it when entering a room"
+        },
+        {
+          "word": "Egg",
+          "pronunciation": "eɡ",
+          "meaning": "An oval food item laid by birds and some reptiles",
+          "hint": "Chickens lay these"
+        }
+      ]
+    },
+    {
+      "category": "Animals",
+      "items": [
+        {
+          "word": "Cat",
+          "pronunciation": "kæt",
+          "meaning": "A small domesticated feline pet",
+          "hint": "Says 'meow' and likes to chase mice"
+        },
+        {
+          "word": "Dog",
+          "pronunciation": "dɒɡ",
+          "meaning": "A domesticated canine pet",
+          "hint": "Man's best friend"
+        },
+        {
+          "word": "Elephant",
+          "pronunciation": "ˈel.ɪ.fənt",
+          "meaning": "A large gray mammal with a long trunk",
+          "hint": "The largest land animal with a very long nose"
+        },
+        {
+          "word": "Fish",
+          "pronunciation": "fɪʃ",
+          "meaning": "An aquatic animal that swims in water",
+          "hint": "Lives in water and has fins"
+        },
+        {
+          "word": "Giraffe",
+          "pronunciation": "dʒɪˈrɑːf",
+          "meaning": "A tall African animal with a very long neck",
+          "hint": "The tallest animal in the world"
+        }
+      ]
+    },
+    {
+      "category": "Nature",
+      "items": [
+        {
+          "word": "Beach",
+          "pronunciation": "biːtʃ",
+          "meaning": "A sandy or pebbly shore by the ocean",
+          "hint": "A place with sand where people go swimming"
+        },
+        {
+          "word": "Cloud",
+          "pronunciation": "klaʊd",
+          "meaning": "A visible mass of water droplets in the sky",
+          "hint": "White fluffy things in the sky"
+        },
+        {
+          "word": "Flower",
+          "pronunciation": "ˈflaʊ.ər",
+          "meaning": "The colorful bloom of a plant",
+          "hint": "Bees collect nectar from these colorful plants"
+        },
+        {
+          "word": "Mountain",
+          "pronunciation": "ˈmaʊn.tɪn",
+          "meaning": "A very high natural elevation of the earth",
+          "hint": "The highest natural point on land"
+        },
+        {
+          "word": "Tree",
+          "pronunciation": "triː",
+          "meaning": "A tall plant with a trunk and branches",
+          "hint": "Birds build nests in these tall plants"
+        }
+      ]
+    },
+    {
+      "category": "Clothing",
+      "items": [
+        {
+          "word": "Boot",
+          "pronunciation": "buːt",
+          "meaning": "A sturdy shoe that covers the ankle",
+          "hint": "Tall shoes you wear in snow or rain"
+        },
+        {
+          "word": "Coat",
+          "pronunciation": "kəʊt",
+          "meaning": "A piece of clothing worn over other clothes for warmth",
+          "hint": "You wear this to stay warm in winter"
+        },
+        {
+          "word": "Hat",
+          "pronunciation": "hæt",
+          "meaning": "A covering worn on the head",
+          "hint": "Keeps your head warm or shaded from the sun"
+        },
+        {
+          "word": "Shirt",
+          "pronunciation": "ʃɜːt",
+          "meaning": "A piece of clothing worn on the upper body",
+          "hint": "You wear this on top with pants or skirts"
+        },
+        {
+          "word": "Shoe",
+          "pronunciation": "ʃuː",
+          "meaning": "A covering for the foot",
+          "hint": "You wear these on your feet when you go out"
+        }
+      ]
+    },
+    {
+      "category": "Transportation",
+      "items": [
+        {
+          "word": "Bicycle",
+          "pronunciation": "ˈbaɪ.sɪ.kəl",
+          "meaning": "A two-wheeled vehicle powered by pedaling",
+          "hint": "You ride it by pushing two pedals with your feet"
+        },
+        {
+          "word": "Bus",
+          "pronunciation": "bʌs",
+          "meaning": "A large motor vehicle carrying passengers",
+          "hint": "A big yellow vehicle that takes children to school"
+        },
+        {
+          "word": "Car",
+          "pronunciation": "kɑːr",
+          "meaning": "A four-wheeled motor vehicle",
+          "hint": "Most families have this in their garage"
+        },
+        {
+          "word": "Train",
+          "pronunciation": "treɪn",
+          "meaning": "A connected line of railroad cars",
+          "hint": "Runs on tracks and makes a 'choo-choo' sound"
+        },
+        {
+          "word": "Plane",
+          "pronunciation": "pleɪn",
+          "meaning": "An aircraft that flies through the air",
+          "hint": "Flies in the sky with wings"
+        }
+      ]
+    },
+    {
+      "category": "Weather",
+      "items": [
+        {
+          "word": "Rain",
+          "pronunciation": "reɪn",
+          "meaning": "Water falling from clouds in drops",
+          "hint": "You need an umbrella when this happens"
+        },
+        {
+          "word": "Snow",
+          "pronunciation": "snəʊ",
+          "meaning": "Frozen water falling as white flakes",
+          "hint": "White and cold, makes good snowmen"
+        },
+        {
+          "word": "Storm",
+          "pronunciation": "stɔːm",
+          "meaning": "Severe weather with strong winds and precipitation",
+          "hint": "Thunder and lightning come with this"
+        },
+        {
+          "word": "Sun",
+          "pronunciation": "sʌn",
+          "meaning": "The star at the center of our solar system",
+          "hint": "Bright yellow circle in the sky during day"
+        },
+        {
+          "word": "Wind",
+          "pronunciation": "wɪnd",
+          "meaning": "Moving air in the atmosphere",
+          "hint": "You can feel it blow but can't see it"
+        }
+      ]
+    },
+    {
+      "category": "Body Parts",
+      "items": [
+        {
+          "word": "Arm",
+          "pronunciation": "ɑːm",
+          "meaning": "An upper limb of the human body",
+          "hint": "You use these to hug people"
+        },
+        {
+          "word": "Eye",
+          "pronunciation": "aɪ",
+          "meaning": "An organ used for seeing",
+          "hint": "You use these to read and watch"
+        },
+        {
+          "word": "Hand",
+          "pronunciation": "hænd",
+          "meaning": "The end part of the arm with fingers",
+          "hint": "You use these to write and hold things"
+        },
+        {
+          "word": "Leg",
+          "pronunciation": "leɡ",
+          "meaning": "A limb used for standing and walking",
+          "hint": "You need these to run and jump"
+        },
+        {
+          "word": "Nose",
+          "pronunciation": "nəʊz",
+          "meaning": "The organ used for smelling",
+          "hint": "In the middle of your face, helps you smell"
+        }
+      ]
+    },
+    {
+      "category": "Home",
+      "items": [
+        {
+          "word": "Bed",
+          "pronunciation": "bed",
+          "meaning": "A piece of furniture for sleeping",
+          "hint": "You sleep on this at night"
+        },
+        {
+          "word": "House",
+          "pronunciation": "haʊs",
+          "meaning": "A building where people live",
+          "hint": "A place where families live together"
+        },
+        {
+          "word": "Kitchen",
+          "pronunciation": "ˈkɪtʃ.ən",
+          "meaning": "A room for cooking and preparing food",
+          "hint": "The room where you cook food"
+        },
+        {
+          "word": "Room",
+          "pronunciation": "ruːm",
+          "meaning": "An enclosed space in a building",
+          "hint": "A space with four walls inside a building"
+        },
+        {
+          "word": "Window",
+          "pronunciation": "ˈwɪn.dəʊ",
+          "meaning": "An opening in a wall to let in light and air",
+          "hint": "You can see outside through this"
+        }
+      ]
+    },
+    {
+      "category": "School",
+      "items": [
+        {
+          "word": "Book",
+          "pronunciation": "bʊk",
+          "meaning": "A set of printed pages bound together",
+          "hint": "You read stories in this"
+        },
+        {
+          "word": "Desk",
+          "pronunciation": "desk",
+          "meaning": "A piece of furniture for writing or working at",
+          "hint": "You sit at this in class"
+        },
+        {
+          "word": "Pencil",
+          "pronunciation": "ˈpen.səl",
+          "meaning": "A writing tool made of wood and graphite",
+          "hint": "You can erase what you write with this"
+        },
+        {
+          "word": "Teacher",
+          "pronunciation": "ˈtiː.tʃər",
+          "meaning": "A person who helps others learn",
+          "hint": "The person who leads the class"
+        },
+        {
+          "word": "Student",
+          "pronunciation": "ˈstjuː.dənt",
+          "meaning": "A person who is learning at a school",
+          "hint": "Someone who goes to school to learn"
+        }
+      ]
+    },
+    {
+      "category": "Colors",
+      "items": [
+        {
+          "word": "Blue",
+          "pronunciation": "bluː",
+          "meaning": "The color of the sky on a clear day",
+          "hint": "The color of the ocean and clear sky"
+        },
+        {
+          "word": "Green",
+          "pronunciation": "ɡriːn",
+          "meaning": "The color of grass and leaves",
+          "hint": "The color of most plants and trees"
+        },
+        {
+          "word": "Red",
+          "pronunciation": "red",
+          "meaning": "The color of blood or a ripe tomato",
+          "hint": "The color of stop signs and fire trucks"
+        },
+        {
+          "word": "Yellow",
+          "pronunciation": "ˈjel.əʊ",
+          "meaning": "The color of the sun or bananas",
+          "hint": "The color of lemons and sunflowers"
+        },
+        {
+          "word": "Purple",
+          "pronunciation": "ˈpɜː.pəl",
+          "meaning": "A color that is a mix of red and blue",
+          "hint": "The color of grapes and eggplants"
+        }
+      ]
+    },
+    {
+      "category": "Technology",
+      "items": [
+        {
+          "word": "Computer",
+          "pronunciation": "kəmˈpjuː.tər",
+          "meaning": "An electronic device for processing information",
+          "hint": "You use this to browse the internet"
+        },
+        {
+          "word": "Phone",
+          "pronunciation": "fəʊn",
+          "meaning": "A device for making calls and communication",
+          "hint": "You use this to call friends and family"
+        },
+        {
+          "word": "Television",
+          "pronunciation": "ˈtel.ɪ.vɪʒ.ən",
+          "meaning": "A device for watching broadcast programs",
+          "hint": "You watch shows and movies on this"
+        },
+        {
+          "word": "Camera",
+          "pronunciation": "ˈkæm.rə",
+          "meaning": "A device for taking photographs",
+          "hint": "You use this to take pictures"
+        },
+        {
+          "word": "Robot",
+          "pronunciation": "ˈrəʊ.bɒt",
+          "meaning": "A machine that can perform automated tasks",
+          "hint": "A machine that can move and work like a person"
+        }
+      ]
+    },
+    {
+      "category": "Jobs",
+      "items": [
+        {
+          "word": "Doctor",
+          "pronunciation": "ˈdɒk.tər",
+          "meaning": "A person who treats sick people",
+          "hint": "You visit them when you're sick"
+        },
+        {
+          "word": "Chef",
+          "pronunciation": "ʃef",
+          "meaning": "A professional cook",
+          "hint": "They cook food in restaurants"
+        },
+        {
+          "word": "Pilot",
+          "pronunciation": "ˈpaɪ.lət",
+          "meaning": "A person who flies aircraft",
+          "hint": "They fly planes in the sky"
+        },
+        {
+          "word": "Artist",
+          "pronunciation": "ˈɑː.tɪst",
+          "meaning": "A person who creates art",
+          "hint": "They paint pictures and make sculptures"
+        },
+        {
+          "word": "Farmer",
+          "pronunciation": "ˈfɑː.mər",
+          "meaning": "A person who works on a farm",
+          "hint": "They grow food and raise animals"
+        }
+      ]
+    },
+    {
+      "category": "Sports",
+      "items": [
+        {
+          "word": "Football",
+          "pronunciation": "ˈfʊt.bɔːl",
+          "meaning": "A ball game played with the feet",
+          "hint": "You kick a round ball to score goals"
+        },
+        {
+          "word": "Basketball",
+          "pronunciation": "ˈbɑː.skɪt.bɔːl",
+          "meaning": "A ball game played with hands and a hoop",
+          "hint": "You throw a ball through a high ring"
+        },
+        {
+          "word": "Tennis",
+          "pronunciation": "ˈten.ɪs",
+          "meaning": "A racket sport played over a net",
+          "hint": "You hit a small yellow ball back and forth"
+        },
+        {
+          "word": "Swimming",
+          "pronunciation": "ˈswɪm.ɪŋ",
+          "meaning": "Moving through water using body movements",
+          "hint": "Moving in water using your arms and legs"
+        },
+        {
+          "word": "Running",
+          "pronunciation": "ˈrʌn.ɪŋ",
+          "meaning": "Moving rapidly on foot",
+          "hint": "Moving fast with your legs"
+        }
+      ]
+    },
+    {
+      "category": "Emotions",
+      "items": [
+        {
+          "word": "Happy",
+          "pronunciation": "ˈhæp.i",
+          "meaning": "Feeling or showing pleasure and contentment",
+          "hint": "How you feel when something good happens"
+        },
+        {
+          "word": "Sad",
+          "pronunciation": "sæd",
+          "meaning": "Feeling or showing sorrow",
+          "hint": "How you feel when you might cry"
+        },
+        {
+          "word": "Angry",
+          "pronunciation": "ˈæŋ.ɡri",
+          "meaning": "Feeling or showing strong annoyance",
+          "hint": "How you feel when something upsets you a lot"
+        },
+        {
+          "word": "Excited",
+          "pronunciation": "ɪkˈsaɪ.tɪd",
+          "meaning": "Very enthusiastic and eager",
+          "hint": "How you feel on your birthday or Christmas"
+        },
+        {
+          "word": "Tired",
+          "pronunciation": "taɪəd",
+          "meaning": "Needing sleep or rest",
+          "hint": "How you feel when you need to sleep"
+        }
+      ]
+    },
+    {
+      "category": "Time",
+      "items": [
+        {
+          "word": "Morning",
+          "pronunciation": "ˈmɔː.nɪŋ",
+          "meaning": "The early part of the day",
+          "hint": "When the sun rises and you wake up"
+        },
+        {
+          "word": "Afternoon",
+          "pronunciation": "ˌɑːf.təˈnuːn",
+          "meaning": "The time between noon and evening",
+          "hint": "The time after lunch but before dinner"
+        },
+        {
+          "word": "Evening",
+          "pronunciation": "ˈiːv.nɪŋ",
+          "meaning": "The end of the day",
+          "hint": "When it starts getting dark outside"
+        },
+        {
+          "word": "Night",
+          "pronunciation": "naɪt",
+          "meaning": "The dark period between sunset and sunrise",
+          "hint": "When it's dark and people usually sleep"
+        },
+        {
+          "word": "Week",
+          "pronunciation": "wiːk",
+          "meaning": "A period of seven days",
+          "hint": "Monday through Sunday"
+        }
+      ]
+    }
+  ]
+} 
