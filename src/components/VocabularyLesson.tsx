@@ -326,12 +326,6 @@ const VocabularyLesson: React.FC<VocabularyLessonProps> = ({
         onPurchase={onPurchase}
         onSell={onSell}
       />
-      <div className="debug-attempts" style={{ marginTop: '20px', fontSize: '12px' }}>
-        <h4>Recent Attempts:</h4>
-        <pre style={{ maxHeight: '200px', overflow: 'auto' }}>
-          {JSON.stringify(wordAttempts.slice(-5), null, 2)}
-        </pre>
-      </div>
     </div>
   );
 };
