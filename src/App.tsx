@@ -127,7 +127,7 @@ function App() {
 
   return (
     <Router>
-      <div className="App">
+    <div className="App">
         <ProgressHeader userProgress={userProgress} />
         <Navigation />
         <main className="app-main">
@@ -179,7 +179,7 @@ function App() {
             onClose={() => setToast(null)}
           />
         )}
-      </div>
+    </div>
     </Router>
   );
 }

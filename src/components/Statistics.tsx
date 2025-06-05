@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { WordStats } from '../types';
+import WrongAttemptsPlot from './WrongAttemptsPlot';
+import { historyStorage } from '../storage/storageInstance';
+import { WordAttempt } from '../types/history';
 
 interface StatisticsProps {
-  wordStats: { [key: string]: WordStats };
+  wordStats?: { [key: string]: WordStats }; // now optional, not used
 }
 
 type SortKey = 'word' | 'attempts' | 'successRate' | 'failedRate' | 'bestTime' | 'medianTime' | 'slowestTime';
@@ -13,11 +16,35 @@ interface SortConfig {
   direction: SortDirection;
 }
 
-const Statistics: React.FC<StatisticsProps> = ({ wordStats }) => {
+const Statistics: React.FC<StatisticsProps> = () => {
   const [sortConfig, setSortConfig] = useState<SortConfig>({
     key: 'attempts',
     direction: 'desc'
   });
+  const [wordStats, setWordStats] = useState<{ [key: string]: WordStats }>({});
+
+  useEffect(() => {
+    async function fetchAndAggregate() {
+      const attempts: WordAttempt[] = await historyStorage.getAllAttempts();
+      // Aggregate attempts into wordStats
+      const statsMap: { [key: string]: WordStats } = {};
+      for (const attempt of attempts) {
+        if (!statsMap[attempt.word]) {
+          statsMap[attempt.word] = {
+            word: attempt.word,
+            attempts: 0,
+            correctAttempts: 0,
+            attemptTimes: [],
+          };
+        }
+        statsMap[attempt.word].attempts += 1;
+        if (attempt.isCorrect) statsMap[attempt.word].correctAttempts += 1;
+        statsMap[attempt.word].attemptTimes.push(attempt.timeTaken);
+      }
+      setWordStats(statsMap);
+    }
+    fetchAndAggregate();
+  }, []);
 
   const calculateStats = (stats: WordStats) => {
     const correctRate = (stats.correctAttempts / stats.attempts) * 100;
@@ -123,6 +150,7 @@ const Statistics: React.FC<StatisticsProps> = ({ wordStats }) => {
   return (
     <div className="statistics">
       <h1>Word Statistics</h1>
+      <WrongAttemptsPlot />
       {Object.keys(wordStats).length > 0 ? (
         <div className="stats-table-container">
           <table className="stats-table">
@@ -195,4 +223,4 @@ const Statistics: React.FC<StatisticsProps> = ({ wordStats }) => {
   );
 };
 
-export default Statistics; 
+export default Statistics;

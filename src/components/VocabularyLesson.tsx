@@ -1,11 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Word, UserProgress, WordStats } from '../types';
+import { WordAttempt } from '../types/history';
+import { UserScores } from '../types/scores';
 import Store from './Store';
 import Timer from './Timer';
 import { getNextWordIndex } from '../utils/wordSampling';
 import { getWordImage } from '../utils/imageAPI';
 import PointsPopup from './PointsPopup';
 import vocabularyData from '../data/vocabulary.json';
+import { historyStorage } from '../storage/storageInstance';
 
 // Extend Word type to include image URL, alt text, and hint
 interface WordWithImage extends Word {
@@ -81,6 +84,8 @@ const VocabularyLesson: React.FC<VocabularyLessonProps> = ({
   const [isCorrect, setIsCorrect] = useState(false);
   const [isLoadingImage, setIsLoadingImage] = useState(true);
   const [hintPenalty, setHintPenalty] = useState(0);
+  const [wordAttempts, setWordAttempts] = useState<WordAttempt[]>([]);
+  const [currentAttemptCount, setCurrentAttemptCount] = useState(1);
   const inputRef = useRef<HTMLInputElement>(null);
   const [pointsPopup, setPointsPopup] = useState<{
     accuracyPoints: number;
@@ -88,6 +93,33 @@ const VocabularyLesson: React.FC<VocabularyLessonProps> = ({
     speedFeedback: string;
     position: { x: number; y: number };
   } | null>(null);
+
+  // Load initial scores from storage - only once on component mount
+  useEffect(() => {
+    const loadScores = async () => {
+      try {
+        const savedScores = await historyStorage.getUserScores();
+        if (savedScores) {
+          // Update the userProgress with saved scores if they exist
+          // But don't add to existing points, just set them if they're higher
+          const totalCurrentPoints = userProgress.accuracyPoints + userProgress.speedPoints;
+          const totalSavedPoints = savedScores.accuracyPoints + savedScores.speedPoints;
+          
+          // Only update if saved scores are higher than current scores
+          if (totalSavedPoints > totalCurrentPoints) {
+            onPointsEarned(
+              Math.max(0, savedScores.accuracyPoints - userProgress.accuracyPoints),
+              Math.max(0, savedScores.speedPoints - userProgress.speedPoints)
+            );
+          }
+        }
+      } catch (error) {
+        console.error('Failed to load scores:', error);
+      }
+    };
+    loadScores();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty dependency array to ensure it only runs once
 
   useEffect(() => {
     const loadWordImage = async () => {
@@ -114,6 +146,7 @@ const VocabularyLesson: React.FC<VocabularyLessonProps> = ({
     setUserGuess('');
     setFeedback('');
     setIsCorrect(false);
+    setCurrentAttemptCount(1);
     inputRef.current?.focus();
   }, [currentWordIndex]);
 
@@ -124,11 +157,11 @@ const VocabularyLesson: React.FC<VocabularyLessonProps> = ({
   const handleShowHint = () => {
     if (!showHint && !isCorrect) {
       setShowHint(true);
-      setHintPenalty(5); // Deduct 5 points for using a hint
+      setHintPenalty(5);
     }
   };
 
-  const checkAnswer = () => {
+  const checkAnswer = async () => {
     if (isCorrect) {
       nextWord();
       return;
@@ -140,9 +173,60 @@ const VocabularyLesson: React.FC<VocabularyLessonProps> = ({
     
     onWordAttempt(currentWordData.word, isAnswerCorrect, timeTaken);
     
+    // Create word attempt record
+    const accuracyPoints = BASE_ACCURACY_POINTS - hintPenalty;
+    const speedPoints = getSpeedPoints(timeTaken);
+    
+    const attempt: WordAttempt = {
+      word: currentWordData.word,
+      userAnswer: userGuess,
+      isCorrect: isAnswerCorrect,
+      timestamp: endTime,
+      timeTaken: timeTaken,
+      accuracyPoints: isAnswerCorrect ? accuracyPoints : 0,
+      speedPoints: isAnswerCorrect ? speedPoints : 0,
+      category: vocabularyData.words.find(cat => 
+        cat.items.some(item => item.word === currentWordData.word)
+      )?.category || 'Unknown',
+      hintUsed: showHint,
+      attemptsCount: currentAttemptCount
+    };
+
+    // Add attempt to history and save to storage
+    setWordAttempts(prevAttempts => [...prevAttempts, attempt]);
+    try {
+      await historyStorage.saveAttempt(attempt);
+
+      if (isAnswerCorrect) {
+        try {
+          // Get current scores
+          const currentScores = await historyStorage.getUserScores() || {
+            accuracyPoints: 0,
+            speedPoints: 0,
+            totalPoints: 0,
+            lastUpdated: Date.now()
+          };
+
+          // Calculate new scores
+          const newScores: UserScores = {
+            accuracyPoints: currentScores.accuracyPoints + accuracyPoints,
+            speedPoints: currentScores.speedPoints + speedPoints,
+            totalPoints: currentScores.totalPoints + accuracyPoints + speedPoints,
+            lastUpdated: Date.now()
+          };
+
+          // Save updated scores
+          await historyStorage.saveUserScores(newScores);
+        } catch (error) {
+          console.error('Failed to update scores in localStorage:', error);
+          // Continue with the game even if localStorage fails
+        }
+      }
+    } catch (error) {
+      console.error('Failed to save data:', error);
+    }
+    
     if (isAnswerCorrect) {
-      const accuracyPoints = BASE_ACCURACY_POINTS - hintPenalty;
-      const speedPoints = getSpeedPoints(timeTaken);
       const speedFeedback = getSpeedFeedback(speedPoints);
       
       // Get the input element position for the popup
@@ -164,6 +248,7 @@ const VocabularyLesson: React.FC<VocabularyLessonProps> = ({
       setIsCorrect(true);
     } else {
       setFeedback('Try again!');
+      setCurrentAttemptCount(prev => prev + 1);
       inputRef.current?.focus();
     }
   };
@@ -241,8 +326,14 @@ const VocabularyLesson: React.FC<VocabularyLessonProps> = ({
         onPurchase={onPurchase}
         onSell={onSell}
       />
+      <div className="debug-attempts" style={{ marginTop: '20px', fontSize: '12px' }}>
+        <h4>Recent Attempts:</h4>
+        <pre style={{ maxHeight: '200px', overflow: 'auto' }}>
+          {JSON.stringify(wordAttempts.slice(-5), null, 2)}
+        </pre>
+      </div>
     </div>
   );
 };
 
-export default VocabularyLesson; 
+export default VocabularyLesson;
