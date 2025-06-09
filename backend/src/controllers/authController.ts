@@ -15,7 +15,7 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    // Validate username format (optional)
+    // Validate username format
     if (username.length < 3) {
       res.status(400).json({ 
         error: 'Username must be at least 3 characters long' 
@@ -23,7 +23,7 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    // Validate password strength (optional)
+    // Validate password strength
     if (password.length < 6) {
       res.status(400).json({ 
         error: 'Password must be at least 6 characters long' 
@@ -46,7 +46,9 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
 
     res.status(201).json({
       message: 'User created successfully',
-      userId: result.userId
+      userId: result.userId,
+      accessToken: result.accessToken,
+      refreshToken: result.refreshToken
     });
   } catch (error) {
     console.error('Signup error:', error);
@@ -71,13 +73,57 @@ export const signin = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    // You might want to generate a JWT token here for authentication
     res.status(200).json({
       message: 'Successfully signed in',
-      userId: result.userId
+      userId: result.userId,
+      accessToken: result.accessToken,
+      refreshToken: result.refreshToken
     });
   } catch (error) {
     console.error('Signin error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+export const refreshToken = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { refreshToken } = req.body;
+
+    if (!refreshToken) {
+      res.status(400).json({ error: 'Refresh token is required' });
+      return;
+    }
+
+    const result = await userService.refreshToken(refreshToken);
+
+    if (!result.success) {
+      res.status(401).json({ error: 'Invalid or expired refresh token' });
+      return;
+    }
+
+    res.status(200).json({
+      accessToken: result.accessToken,
+      refreshToken: result.refreshToken
+    });
+  } catch (error) {
+    console.error('Token refresh error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+export const logout = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const userId = req.user?.userId;
+    
+    if (!userId) {
+      res.status(401).json({ error: 'User not authenticated' });
+      return;
+    }
+
+    await userService.logout(userId);
+    res.status(200).json({ message: 'Successfully logged out' });
+  } catch (error) {
+    console.error('Logout error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 }; 
