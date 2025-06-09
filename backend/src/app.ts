@@ -8,6 +8,7 @@ import { config } from 'dotenv';
 import vocabularyRoutes from './routes/vocabulary';
 import attemptsRoutes from './routes/attempts';
 import statisticsRoutes from './routes/statistics';
+import imageRoutes from './routes/images';
 
 // Load environment variables
 config();
@@ -24,6 +25,7 @@ app.use(express.json()); // Parse JSON bodies
 app.use('/api/vocabulary', vocabularyRoutes);
 app.use('/api/attempts', attemptsRoutes);
 app.use('/api/statistics', statisticsRoutes);
+app.use('/api/images', imageRoutes);
 
 // Error handling middleware
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {

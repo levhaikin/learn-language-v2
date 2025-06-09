@@ -1,38 +1,27 @@
 import { Router } from 'express';
-import { Word } from '../types/vocabulary';
+import {
+  getAllWords,
+  getWordsByCategory,
+  getWordsByDifficulty,
+  getCategories,
+  getWord
+} from '../controllers/vocabularyController';
 
 const router = Router();
 
 // Get all vocabulary words
-router.get('/', async (req, res) => {
-  try {
-    // TODO: Implement data fetching
-    res.json({ message: 'Get all vocabulary' });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch vocabulary' });
-  }
-});
+router.get('/', getAllWords);
+
+// Get all categories
+router.get('/categories', getCategories);
 
 // Get vocabulary by category
-router.get('/category/:category', async (req, res) => {
-  try {
-    const { category } = req.params;
-    // TODO: Implement category filtering
-    res.json({ message: `Get vocabulary for category: ${category}` });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch vocabulary by category' });
-  }
-});
+router.get('/category/:category', getWordsByCategory);
 
 // Get vocabulary by difficulty
-router.get('/difficulty/:level', async (req, res) => {
-  try {
-    const { level } = req.params;
-    // TODO: Implement difficulty filtering
-    res.json({ message: `Get vocabulary for difficulty: ${level}` });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch vocabulary by difficulty' });
-  }
-});
+router.get('/difficulty/:level', getWordsByDifficulty);
+
+// Get specific word
+router.get('/word/:word', getWord);
 
 export default router; 

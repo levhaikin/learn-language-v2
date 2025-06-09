@@ -1,26 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Word, UserProgress, WordStats } from '../types';
-import { WordAttempt } from '../types/history';
-import { UserScores } from '../types/scores';
+import { UserProgress } from '../types';
 import Store from './Store';
 import Timer from './Timer';
-import { getNextWordIndex } from '../utils/wordSampling';
-import { getWordImage } from '../utils/imageAPI';
 import PointsPopup from './PointsPopup';
-import vocabularyData from '../data/vocabulary.json';
-import { historyStorage } from '../storage/storageInstance';
-
-// Extend Word type to include image URL, alt text, and hint
-interface WordWithImage extends Word {
-  imageUrl?: string;
-  imageAlt?: string;
-  hint?: string;
-}
-
-// Convert the categorized vocabulary data into a flat array of words
-const words: WordWithImage[] = vocabularyData.words.reduce((acc: WordWithImage[], category) => {
-  return [...acc, ...category.items];
-}, []);
+import { api, Word, WordImage } from '../services/api';
 
 interface VocabularyLessonProps {
   userProgress: UserProgress;
@@ -30,41 +13,6 @@ interface VocabularyLessonProps {
   onWordAttempt: (word: string, isCorrect: boolean, timeTaken: number) => void;
 }
 
-const SPEED_THRESHOLDS = {
-  SUPER_FAST: 2000,  // 2 seconds
-  FAST: 5000,        // 5 seconds
-  MEDIUM: 7000       // 7 seconds
-};
-
-const SPEED_POINTS = {
-  SUPER_FAST: 15,    // Under 2 seconds
-  FAST: 10,         // Under 5 seconds
-  MEDIUM: 5,        // Under 7 seconds
-  SLOW: 0           // Above 7 seconds
-};
-
-const BASE_ACCURACY_POINTS = 10;
-
-const getSpeedPoints = (timeTaken: number): number => {
-  if (timeTaken < SPEED_THRESHOLDS.SUPER_FAST) return SPEED_POINTS.SUPER_FAST;
-  if (timeTaken < SPEED_THRESHOLDS.FAST) return SPEED_POINTS.FAST;
-  if (timeTaken < SPEED_THRESHOLDS.MEDIUM) return SPEED_POINTS.MEDIUM;
-  return SPEED_POINTS.SLOW;
-};
-
-const getSpeedFeedback = (speedPoints: number): string => {
-  switch (speedPoints) {
-    case SPEED_POINTS.SUPER_FAST:
-      return 'Lightning fast! 🚀';
-    case SPEED_POINTS.FAST:
-      return 'Very quick! ⚡';
-    case SPEED_POINTS.MEDIUM:
-      return 'Good timing! ⌚';
-    default:
-      return 'Keep practicing! 💪';
-  }
-};
-
 const VocabularyLesson: React.FC<VocabularyLessonProps> = ({
   userProgress,
   onPointsEarned,
@@ -72,20 +20,19 @@ const VocabularyLesson: React.FC<VocabularyLessonProps> = ({
   onSell,
   onWordAttempt
 }) => {
-  const [currentWordIndex, setCurrentWordIndex] = useState(() => 
-    getNextWordIndex(words, userProgress.wordStats)
-  );
-  const [currentWordData, setCurrentWordData] = useState<WordWithImage>(words[currentWordIndex]);
+  const [words, setWords] = useState<Word[]>([]);
+  const [currentWordIndex, setCurrentWordIndex] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [showMeaning, setShowMeaning] = useState(false);
   const [showHint, setShowHint] = useState(false);
   const [startTime, setStartTime] = useState<number>(Date.now());
   const [userGuess, setUserGuess] = useState('');
   const [feedback, setFeedback] = useState('');
   const [isCorrect, setIsCorrect] = useState(false);
-  const [isLoadingImage, setIsLoadingImage] = useState(true);
   const [hintPenalty, setHintPenalty] = useState(0);
-  const [wordAttempts, setWordAttempts] = useState<WordAttempt[]>([]);
-  const [currentAttemptCount, setCurrentAttemptCount] = useState(1);
+  const [currentImage, setCurrentImage] = useState<WordImage | null>(null);
+  const [isLoadingImage, setIsLoadingImage] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const [pointsPopup, setPointsPopup] = useState<{
     accuracyPoints: number;
@@ -94,51 +41,54 @@ const VocabularyLesson: React.FC<VocabularyLessonProps> = ({
     position: { x: number; y: number };
   } | null>(null);
 
-  // Load initial scores from storage - only once on component mount
+  // Load words from API
   useEffect(() => {
-    const loadScores = async () => {
+    const loadWords = async () => {
       try {
-        const savedScores = await historyStorage.getUserScores();
-        if (savedScores) {
-          // Update the userProgress with saved scores if they exist
-          // But don't add to existing points, just set them if they're higher
-          const totalCurrentPoints = userProgress.accuracyPoints + userProgress.speedPoints;
-          const totalSavedPoints = savedScores.accuracyPoints + savedScores.speedPoints;
-          
-          // Only update if saved scores are higher than current scores
-          if (totalSavedPoints > totalCurrentPoints) {
-            onPointsEarned(
-              Math.max(0, savedScores.accuracyPoints - userProgress.accuracyPoints),
-              Math.max(0, savedScores.speedPoints - userProgress.speedPoints)
-            );
-          }
-        }
-      } catch (error) {
-        console.error('Failed to load scores:', error);
+        setIsLoading(true);
+        setError(null);
+        const fetchedWords = await api.vocabulary.getAll();
+        setWords(fetchedWords);
+        setCurrentWordIndex(0);
+      } catch (err) {
+        setError('Failed to load vocabulary. Please try again.');
+        console.error('Error loading vocabulary:', err);
+      } finally {
+        setIsLoading(false);
       }
     };
-    loadScores();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Empty dependency array to ensure it only runs once
+    loadWords();
+  }, []);
 
+  // Load word image when current word changes
   useEffect(() => {
     const loadWordImage = async () => {
+      if (!words[currentWordIndex]) return;
+      
       setIsLoadingImage(true);
-      const wordData = words[currentWordIndex];
-      if (!wordData.imageUrl) {
-        try {
-          const image = await getWordImage(wordData.word);
-          wordData.imageUrl = image.url;
-          wordData.imageAlt = image.alt;
-        } catch (error) {
-          console.error('Failed to load image:', error);
-        }
+      setCurrentImage(null);
+      try {
+        const image = await api.images.getWordImage(words[currentWordIndex].word);
+        setCurrentImage(image);
+      } catch (error) {
+        console.error('Failed to load image:', error);
+      } finally {
+        setIsLoadingImage(false);
       }
-      setCurrentWordData(wordData);
-      setIsLoadingImage(false);
     };
 
     loadWordImage();
+  }, [currentWordIndex, words]);
+
+  const currentWord = words[currentWordIndex];
+
+  const nextWord = () => {
+    const nextIndex = (currentWordIndex + 1) % words.length;
+    setCurrentWordIndex(nextIndex);
+    resetWordState();
+  };
+
+  const resetWordState = () => {
     setStartTime(Date.now());
     setShowMeaning(false);
     setShowHint(false);
@@ -146,12 +96,7 @@ const VocabularyLesson: React.FC<VocabularyLessonProps> = ({
     setUserGuess('');
     setFeedback('');
     setIsCorrect(false);
-    setCurrentAttemptCount(1);
     inputRef.current?.focus();
-  }, [currentWordIndex]);
-
-  const nextWord = () => {
-    setCurrentWordIndex(getNextWordIndex(words, userProgress.wordStats, currentWordIndex));
   };
 
   const handleShowHint = () => {
@@ -167,88 +112,63 @@ const VocabularyLesson: React.FC<VocabularyLessonProps> = ({
       return;
     }
 
-    const isAnswerCorrect = userGuess.toLowerCase() === currentWordData.word.toLowerCase();
+    const isAnswerCorrect = userGuess.toLowerCase() === currentWord.word.toLowerCase();
     const endTime = Date.now();
     const timeTaken = endTime - startTime;
     
-    onWordAttempt(currentWordData.word, isAnswerCorrect, timeTaken);
-    
-    // Create word attempt record
-    const accuracyPoints = BASE_ACCURACY_POINTS - hintPenalty;
-    const speedPoints = getSpeedPoints(timeTaken);
-    
-    const attempt: WordAttempt = {
-      word: currentWordData.word,
-      userAnswer: userGuess,
-      isCorrect: isAnswerCorrect,
-      timestamp: endTime,
-      timeTaken: timeTaken,
-      accuracyPoints: isAnswerCorrect ? accuracyPoints : 0,
-      speedPoints: isAnswerCorrect ? speedPoints : 0,
-      category: vocabularyData.words.find(cat => 
-        cat.items.some(item => item.word === currentWordData.word)
-      )?.category || 'Unknown',
-      hintUsed: showHint,
-      attemptsCount: currentAttemptCount
-    };
-
-    // Add attempt to history and save to storage
-    setWordAttempts(prevAttempts => [...prevAttempts, attempt]);
-    try {
-      await historyStorage.saveAttempt(attempt);
-
-      if (isAnswerCorrect) {
-        try {
-          // Get current scores
-          const currentScores = await historyStorage.getUserScores() || {
-            accuracyPoints: 0,
-            speedPoints: 0,
-            totalPoints: 0,
-            lastUpdated: Date.now()
-          };
-
-          // Calculate new scores
-          const newScores: UserScores = {
-            accuracyPoints: currentScores.accuracyPoints + accuracyPoints,
-            speedPoints: currentScores.speedPoints + speedPoints,
-            totalPoints: currentScores.totalPoints + accuracyPoints + speedPoints,
-            lastUpdated: Date.now()
-          };
-
-          // Save updated scores
-          await historyStorage.saveUserScores(newScores);
-        } catch (error) {
-          console.error('Failed to update scores in localStorage:', error);
-          // Continue with the game even if localStorage fails
-        }
-      }
-    } catch (error) {
-      console.error('Failed to save data:', error);
-    }
+    onWordAttempt(currentWord.word, isAnswerCorrect, timeTaken);
     
     if (isAnswerCorrect) {
-      const speedFeedback = getSpeedFeedback(speedPoints);
-      
-      // Get the input element position for the popup
-      const inputElement = inputRef.current?.getBoundingClientRect();
-      if (inputElement) {
-        setPointsPopup({
-          accuracyPoints,
-          speedPoints,
-          speedFeedback,
-          position: {
-            x: inputElement.left + inputElement.width / 2,
-            y: inputElement.top,
-          },
+      try {
+        // Record the attempt
+        await api.attempts.create({
+          word: currentWord.word,
+          isCorrect: true,
+          timeTaken,
+          category: currentWord.category
         });
-      }
 
-      onPointsEarned(accuracyPoints, speedPoints);
-      setShowMeaning(true);
-      setIsCorrect(true);
+        // Calculate points
+        const accuracyPoints = 10 - hintPenalty; // Base points minus hint penalty
+        let speedPoints = 0;
+        let speedFeedback = '';
+
+        if (timeTaken < 1500) {
+          speedPoints = 15;
+          speedFeedback = 'Super Fast! 🚀';
+        } else if (timeTaken < 3000) {
+          speedPoints = 10;
+          speedFeedback = 'Great Speed! ⚡';
+        } else if (timeTaken < 5000) {
+          speedPoints = 5;
+          speedFeedback = 'Good Timing! 👍';
+        } else {
+          speedFeedback = 'Keep Practicing! 💪';
+        }
+
+        // Show points popup
+        const inputElement = inputRef.current?.getBoundingClientRect();
+        if (inputElement) {
+          setPointsPopup({
+            accuracyPoints,
+            speedPoints,
+            speedFeedback,
+            position: {
+              x: inputElement.left + inputElement.width / 2,
+              y: inputElement.top,
+            },
+          });
+        }
+
+        onPointsEarned(accuracyPoints, speedPoints);
+        setShowMeaning(true);
+        setIsCorrect(true);
+      } catch (error) {
+        console.error('Failed to record attempt:', error);
+        // Continue with the game even if recording fails
+      }
     } else {
       setFeedback('Try again!');
-      setCurrentAttemptCount(prev => prev + 1);
       inputRef.current?.focus();
     }
   };
@@ -260,20 +180,38 @@ const VocabularyLesson: React.FC<VocabularyLessonProps> = ({
     }
   };
 
+  if (isLoading) {
+    return <div className="loading">Loading vocabulary...</div>;
+  }
+
+  if (error) {
+    return <div className="error">{error}</div>;
+  }
+
+  if (!currentWord) {
+    return <div className="error">No vocabulary words available.</div>;
+  }
+
   return (
     <div className="vocabulary-lesson">
       <div className="word-card">
         <div className="word-image">
           {isLoadingImage ? (
-            <div className="image-loading">Loading...</div>
-          ) : currentWordData.imageUrl ? (
+            <div className="image-loading">Loading image...</div>
+          ) : currentImage ? (
             <img 
-              src={currentWordData.imageUrl} 
-              alt={currentWordData.imageAlt || currentWordData.word}
+              src={currentImage.url} 
+              alt={currentImage.alt}
               className="word-image-photo"
             />
           ) : (
-            <div className="image-fallback">{currentWordData.word}</div>
+            <div className="image-fallback">{currentWord?.word}</div>
+          )}
+        </div>
+        <div className="word-meaning">
+          <h2>{currentWord?.translation}</h2>
+          {showHint && currentWord?.hint && (
+            <p className="hint">{currentWord.hint}</p>
           )}
         </div>
         <Timer isRunning={!isCorrect} startTime={startTime} />
@@ -303,15 +241,24 @@ const VocabularyLesson: React.FC<VocabularyLessonProps> = ({
             </button>
           )}
         </div>
-        {showHint && !isCorrect && currentWordData.hint && (
-          <p className="hint-text">Hint: {currentWordData.hint}</p>
-        )}
         {feedback && <p className="feedback">{feedback}</p>}
         {showMeaning && (
           <>
-            <h3 className="word-text">{currentWordData.word}</h3>
-            <p className="pronunciation">/{currentWordData.pronunciation}/</p>
-            <p className="meaning">{currentWordData.meaning}</p>
+            <h3 className="word-text">{currentWord.word}</h3>
+            {currentWord.pronunciation && (
+              <p className="pronunciation">/{currentWord.pronunciation}/</p>
+            )}
+            <p className="meaning">{currentWord.definition}</p>
+            {currentWord.examples && currentWord.examples.length > 0 && (
+              <div className="examples">
+                <h4>Examples:</h4>
+                <ul>
+                  {currentWord.examples.map((example, index) => (
+                    <li key={index}>{example}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </>
         )}
       </div>
