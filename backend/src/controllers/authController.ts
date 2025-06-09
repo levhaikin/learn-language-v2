@@ -3,6 +3,15 @@ import { UserService } from '../services/userService';
 
 const userService = new UserService();
 
+// Cookie configuration
+const cookieOptions = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  path: '/'
+} as const;
+
 export const signup = async (req: Request, res: Response): Promise<void> => {
   try {
     const { username, password, firstName, lastName, email } = req.body;
@@ -44,11 +53,16 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
+    // Set cookies
+    res.cookie('accessToken', result.accessToken, {
+      ...cookieOptions,
+      maxAge: 15 * 60 * 1000 // 15 minutes
+    });
+    res.cookie('refreshToken', result.refreshToken, cookieOptions);
+
     res.status(201).json({
       message: 'User created successfully',
-      userId: result.userId,
-      accessToken: result.accessToken,
-      refreshToken: result.refreshToken
+      userId: result.userId
     });
   } catch (error) {
     console.error('Signup error:', error);
@@ -73,11 +87,16 @@ export const signin = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
+    // Set cookies
+    res.cookie('accessToken', result.accessToken, {
+      ...cookieOptions,
+      maxAge: 15 * 60 * 1000 // 15 minutes
+    });
+    res.cookie('refreshToken', result.refreshToken, cookieOptions);
+
     res.status(200).json({
       message: 'Successfully signed in',
-      userId: result.userId,
-      accessToken: result.accessToken,
-      refreshToken: result.refreshToken
+      userId: result.userId
     });
   } catch (error) {
     console.error('Signin error:', error);
@@ -87,10 +106,10 @@ export const signin = async (req: Request, res: Response): Promise<void> => {
 
 export const refreshToken = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { refreshToken } = req.body;
+    const refreshToken = req.cookies.refreshToken;
 
     if (!refreshToken) {
-      res.status(400).json({ error: 'Refresh token is required' });
+      res.status(401).json({ error: 'Refresh token is required' });
       return;
     }
 
@@ -101,9 +120,15 @@ export const refreshToken = async (req: Request, res: Response): Promise<void> =
       return;
     }
 
+    // Set new cookies
+    res.cookie('accessToken', result.accessToken, {
+      ...cookieOptions,
+      maxAge: 15 * 60 * 1000 // 15 minutes
+    });
+    res.cookie('refreshToken', result.refreshToken, cookieOptions);
+
     res.status(200).json({
-      accessToken: result.accessToken,
-      refreshToken: result.refreshToken
+      message: 'Tokens refreshed successfully'
     });
   } catch (error) {
     console.error('Token refresh error:', error);
@@ -121,6 +146,11 @@ export const logout = async (req: Request, res: Response): Promise<void> => {
     }
 
     await userService.logout(userId);
+
+    // Clear cookies
+    res.clearCookie('accessToken', cookieOptions);
+    res.clearCookie('refreshToken', cookieOptions);
+
     res.status(200).json({ message: 'Successfully logged out' });
   } catch (error) {
     console.error('Logout error:', error);
