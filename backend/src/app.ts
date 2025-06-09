@@ -9,6 +9,7 @@ import vocabularyRoutes from './routes/vocabulary';
 import attemptsRoutes from './routes/attempts';
 import statisticsRoutes from './routes/statistics';
 import imageRoutes from './routes/images';
+import authRoutes from './routes/authRoutes';
 
 // Load environment variables
 config();
@@ -22,6 +23,7 @@ app.use(morgan('dev')); // Request logging
 app.use(express.json()); // Parse JSON bodies
 
 // API Routes
+app.use('/api/auth', authRoutes);
 app.use('/api/vocabulary', vocabularyRoutes);
 app.use('/api/attempts', attemptsRoutes);
 app.use('/api/statistics', statisticsRoutes);
