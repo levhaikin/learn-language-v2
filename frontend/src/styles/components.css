@@ -339,22 +339,20 @@
 
 .nav-right {
   display: flex;
-  gap: 1.5rem;
   align-items: center;
+  gap: 1rem;
 }
 
 .nav-link {
   text-decoration: none;
-  color: #495057;
-  font-weight: 500;
-  transition: color 0.2s;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  color: inherit;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: background-color 0.2s;
 }
 
 .nav-link:hover {
-  color: #007bff;
+  background-color: rgba(0, 0, 0, 0.04);
 }
 
 /* Dropdown styles */
@@ -796,4 +794,24 @@
 /* Add these styles at the top of the file */
 .app-main.with-header {
   padding-top: 80px; /* Adjust this value based on your header height */
+}
+
+/* Profile Menu Styles */
+.profile-button {
+  margin-left: 1rem;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.profile-button:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+/* Ensure the avatar stays circular */
+.MuiAvatar-root {
+  border-radius: 50%;
 } 
