@@ -21,7 +21,7 @@ export const authenticateToken = (
   next: NextFunction
 ) => {
   const token = req.cookies.accessToken;
-  console.log('token', token);
+  
   if (!token) {
     return res.status(401).json({ error: 'Access token is required' });
   }
