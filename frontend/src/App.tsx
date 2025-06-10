@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { ThemeProvider, createTheme } from '@mui/material';
+import { Box, CircularProgress, ThemeProvider, createTheme } from '@mui/material';
 import Navigation from './components/Navigation';
 import Home from './components/Home';
 import VocabularyLesson from './components/VocabularyLesson';
@@ -43,8 +43,33 @@ const theme = createTheme({
 
 // Protected Route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const isAuthenticated = authService.isAuthenticated();
-  return isAuthenticated ? <>{children}</> : <Navigate to="/auth" />;
+  const [isChecking, setIsChecking] = useState(true);
+  const [isAuthed, setIsAuthed] = useState(false);
+  
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const authenticated = await authService.isAuthenticated();
+        setIsAuthed(authenticated);
+      } finally {
+        setIsChecking(false);
+      }
+    };
+    
+    checkAuth();
+  }, []);
+
+  // Show loading state while checking authentication
+  if (isChecking) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  // Once checked, either redirect or show protected content
+  return isAuthed ? <>{children}</> : <Navigate to="/auth" />;
 };
 
 function App() {

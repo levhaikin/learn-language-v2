@@ -9,17 +9,22 @@ interface AuthState {
 
 export function useAuth() {
   const [authState, setAuthState] = useState<AuthState>({
-    isAuthenticated: authService.isAuthenticated(),
+    isAuthenticated: false,  // Start with false
     userId: null,
   });
   const navigate = useNavigate();
 
   useEffect(() => {
     // Check authentication status on mount
-    setAuthState({
-      isAuthenticated: authService.isAuthenticated(),
-      userId: null,
-    });
+    const checkAuth = async () => {
+      const isAuthenticated = await authService.isAuthenticated();
+      setAuthState(prev => ({
+        ...prev,
+        isAuthenticated
+      }));
+    };
+    
+    checkAuth();
   }, []);
 
   const handleSignIn = async () => {

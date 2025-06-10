@@ -47,7 +47,15 @@ class AuthService {
     this.isAuthenticatedFlag = false;
   }
 
-  isAuthenticated(): boolean {
+  async isAuthenticated(): Promise<boolean> {
+    try {
+      // Try to refresh the token
+      await axios.post(`${API_URL}/auth/refresh-token`);
+      this.isAuthenticatedFlag = true;
+    } catch (refreshError) {
+      this.isAuthenticatedFlag = false;
+    }
+    
     return this.isAuthenticatedFlag;
   }
 
