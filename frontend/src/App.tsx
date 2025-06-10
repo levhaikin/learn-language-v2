@@ -9,7 +9,7 @@ import Statistics from './components/Statistics';
 import WordMatching from './components/WordMatching';
 import Toast from './components/Toast';
 import ProgressHeader from './components/ProgressHeader';
-import { UserProgress, WordStats } from './types';
+import { UserProgress } from './types';
 import { storeItems } from './components/Store';
 import './styles/components.css';
 import AuthPage from './pages/Auth/AuthPage';
@@ -150,45 +150,60 @@ function App() {
     <ThemeProvider theme={theme}>
       <Router>
         <div className="App">
-          <ProgressHeader userProgress={userProgress} />
-          <Navigation />
-          <main className="app-main">
-            <Routes>
-              <Route path="/auth" element={<AuthPage />} />
-              <Route
-                path="/"
-                element={
-                  <ProtectedRoute>
-                    <div>Protected Home Page</div>
-                  </ProtectedRoute>
-                }
-              />
-              <Route path="/vocabulary" element={<VocabularyLesson userProgress={userProgress} onPointsEarned={handlePointsEarned} onPurchase={handlePurchase} onSell={handleSell} onWordAttempt={handleWordAttempt} />} />
-              <Route path="/scores" element={<Scores userProgress={userProgress} />} />
-              <Route path="/statistics" element={<Statistics wordStats={userProgress.wordStats} />} />
-              <Route
-                path="/matching"
-                element={
-                  <WordMatching
-                    words={sampleWords}
-                    userProgress={userProgress}
-                    onComplete={handleMatchingComplete}
-                    onPointsEarned={handlePointsEarned}
-                    onPurchase={handlePurchase}
-                    onSell={handleSell}
-                  />
-                }
-              />
-              <Route path="/sentences" element={<div className="coming-soon">Sentence Building - Coming Soon!</div>} />
-            </Routes>
-          </main>
-          {toast && (
-            <Toast
-              message={toast.message}
-              type={toast.type}
-              onClose={() => setToast(null)}
+          <Routes>
+            <Route path="/auth" element={<AuthPage />} />
+            <Route
+              path="/*"
+              element={
+                <ProtectedRoute>
+                  <div className="App">
+                    <ProgressHeader userProgress={userProgress} />
+                    <Navigation />
+                    <main className="app-main">
+                      <Routes>
+                        <Route path="/" element={<Home />} />
+                        <Route 
+                          path="/vocabulary" 
+                          element={
+                            <VocabularyLesson 
+                              userProgress={userProgress} 
+                              onPointsEarned={handlePointsEarned} 
+                              onPurchase={handlePurchase} 
+                              onSell={handleSell} 
+                              onWordAttempt={handleWordAttempt} 
+                            />
+                          } 
+                        />
+                        <Route path="/scores" element={<Scores userProgress={userProgress} />} />
+                        <Route path="/statistics" element={<Statistics wordStats={userProgress.wordStats} />} />
+                        <Route
+                          path="/matching"
+                          element={
+                            <WordMatching
+                              words={sampleWords}
+                              userProgress={userProgress}
+                              onComplete={handleMatchingComplete}
+                              onPointsEarned={handlePointsEarned}
+                              onPurchase={handlePurchase}
+                              onSell={handleSell}
+                            />
+                          }
+                        />
+                        <Route path="/sentences" element={<div className="coming-soon">Sentence Building - Coming Soon!</div>} />
+                      </Routes>
+                    </main>
+                    {toast && (
+                      <Toast
+                        message={toast.message}
+                        type={toast.type}
+                        onClose={() => setToast(null)}
+                      />
+                    )}
+                  </div>
+                </ProtectedRoute>
+              }
             />
-          )}
+          </Routes>
         </div>
       </Router>
     </ThemeProvider>
