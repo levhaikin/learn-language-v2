@@ -2,8 +2,14 @@ import axios from 'axios';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
 
-// Configure axios to include credentials
-axios.defaults.withCredentials = true;
+// Configure axios instance with default settings
+const axiosInstance = axios.create({
+    baseURL: API_URL,
+    withCredentials: true, // Required for cookies
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
 
 export interface SignUpData {
   username: string;
@@ -27,7 +33,7 @@ class AuthService {
   private isAuthenticatedFlag: boolean = false;
 
   async signUp(data: SignUpData): Promise<AuthResponse> {
-    const response = await axios.post(`${API_URL}/auth/signup`, data);
+    const response = await axiosInstance.post(`${API_URL}/auth/signup`, data);
     if (response.data.userId) {
       this.isAuthenticatedFlag = true;
     }
@@ -35,7 +41,7 @@ class AuthService {
   }
 
   async signIn(data: SignInData): Promise<AuthResponse> {
-    const response = await axios.post(`${API_URL}/auth/signin`, data);
+    const response = await axiosInstance.post(`${API_URL}/auth/signin`, data);
     if (response.data.userId) {
       this.isAuthenticatedFlag = true;
     }
@@ -43,14 +49,14 @@ class AuthService {
   }
 
   async logout(): Promise<void> {
-    await axios.post(`${API_URL}/auth/logout`);
+    await axiosInstance.post(`${API_URL}/auth/logout`);
     this.isAuthenticatedFlag = false;
   }
 
   async isAuthenticated(): Promise<boolean> {
     try {
       // Try to refresh the token
-      await axios.post(`${API_URL}/auth/refresh-token`);
+      await axiosInstance.post(`${API_URL}/auth/refresh-token`);
       this.isAuthenticatedFlag = true;
     } catch (refreshError) {
       this.isAuthenticatedFlag = false;
@@ -61,7 +67,7 @@ class AuthService {
 
   // Setup axios interceptor for token refresh
   setupAxiosInterceptors() {
-    axios.interceptors.response.use(
+    axiosInstance.interceptors.response.use(
       (response) => response,
       async (error) => {
         const originalRequest = error.config;
@@ -69,7 +75,7 @@ class AuthService {
         // If the error is 401 and we haven't tried to refresh the token yet
         if (error.response.status === 401 && !originalRequest._retry) {
           originalRequest._retry = true;
-
+          
           try {
             // Try to refresh the token
             await axios.post(`${API_URL}/auth/refresh-token`);

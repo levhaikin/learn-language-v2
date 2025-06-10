@@ -41,7 +41,7 @@ export default function SignInForm({ onSuccess }: SignInFormProps) {
     } catch (err) {
       if (axios.isAxiosError(err)) {
         setError(
-          err.response?.data?.error || 'An error occurred during sign in'
+          'An error occurred during sign in'
         );
       } else {
         setError('An unexpected error occurred');
