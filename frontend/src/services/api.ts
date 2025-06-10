@@ -1,4 +1,15 @@
+import axios from 'axios';
+
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
+
+// Configure axios instance with default settings
+const axiosInstance = axios.create({
+  baseURL: API_BASE_URL,
+  withCredentials: true, // Required for cookies
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
 
 export interface Word {
   word: string;
@@ -20,42 +31,36 @@ export const api = {
   // Vocabulary endpoints
   vocabulary: {
     getAll: async (): Promise<Word[]> => {
-      const response = await fetch(`${API_BASE_URL}/vocabulary`);
-      if (!response.ok) throw new Error('Failed to fetch vocabulary');
-      return response.json();
+      const response = await axiosInstance.get('/vocabulary');
+      return response.data;
     },
 
     getByCategory: async (category: string): Promise<Word[]> => {
-      const response = await fetch(`${API_BASE_URL}/vocabulary/category/${encodeURIComponent(category)}`);
-      if (!response.ok) throw new Error('Failed to fetch category vocabulary');
-      return response.json();
+      const response = await axiosInstance.get(`/vocabulary/category/${encodeURIComponent(category)}`);
+      return response.data;
     },
 
     getByDifficulty: async (level: 'easy' | 'medium' | 'hard'): Promise<Word[]> => {
-      const response = await fetch(`${API_BASE_URL}/vocabulary/difficulty/${level}`);
-      if (!response.ok) throw new Error('Failed to fetch difficulty vocabulary');
-      return response.json();
+      const response = await axiosInstance.get(`/vocabulary/difficulty/${level}`);
+      return response.data;
     },
 
     getCategories: async (): Promise<string[]> => {
-      const response = await fetch(`${API_BASE_URL}/vocabulary/categories`);
-      if (!response.ok) throw new Error('Failed to fetch categories');
-      return response.json();
+      const response = await axiosInstance.get('/vocabulary/categories');
+      return response.data;
     },
 
     getWord: async (word: string): Promise<Word> => {
-      const response = await fetch(`${API_BASE_URL}/vocabulary/word/${encodeURIComponent(word)}`);
-      if (!response.ok) throw new Error('Word not found');
-      return response.json();
+      const response = await axiosInstance.get(`/vocabulary/word/${encodeURIComponent(word)}`);
+      return response.data;
     }
   },
 
   // Image endpoints
   images: {
     getWordImage: async (word: string): Promise<WordImage> => {
-      const response = await fetch(`${API_BASE_URL}/images/word/${encodeURIComponent(word)}`);
-      if (!response.ok) throw new Error('Failed to fetch image');
-      return response.json();
+      const response = await axiosInstance.get(`/images/word/${encodeURIComponent(word)}`);
+      return response.data;
     }
   },
 
@@ -67,26 +72,17 @@ export const api = {
       timeTaken: number;
       category: string;
     }): Promise<void> => {
-      const response = await fetch(`${API_BASE_URL}/attempts`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(attempt),
-      });
-      if (!response.ok) throw new Error('Failed to record attempt');
+      await axiosInstance.post('/attempts', attempt);
     },
 
     getHistory: async () => {
-      const response = await fetch(`${API_BASE_URL}/attempts`);
-      if (!response.ok) throw new Error('Failed to fetch attempts history');
-      return response.json();
+      const response = await axiosInstance.get('/attempts');
+      return response.data;
     },
 
     getWordAttempts: async (word: string) => {
-      const response = await fetch(`${API_BASE_URL}/attempts/word/${encodeURIComponent(word)}`);
-      if (!response.ok) throw new Error('Failed to fetch word attempts');
-      return response.json();
+      const response = await axiosInstance.get(`/attempts/word/${encodeURIComponent(word)}`);
+      return response.data;
     }
   }
 }; 
