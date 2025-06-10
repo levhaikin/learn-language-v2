@@ -1,20 +1,28 @@
-export type StorageType = 'localStorage' | 'indexedDB' | 'firebase';
+export type StorageType = 'localStorage' | 'backend';
 
 interface StorageConfig {
   type: StorageType;
   options?: {
     prefix?: string;
-    maxAttempts?: number;
   };
 }
 
 // Default configuration
-const config: StorageConfig = {
+const backendStorageConfig: StorageConfig = {
+  type: 'backend',
+  options: {
+    prefix: 'english_learning_',
+  }
+};
+
+// Default configuration
+const localStorageConfig: StorageConfig = {
   type: 'localStorage',
   options: {
     prefix: 'english_learning_',
-    maxAttempts: 1000
   }
 };
+
+const config = backendStorageConfig;
 
 export default config; 

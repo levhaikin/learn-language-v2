@@ -6,16 +6,16 @@ import cookieParser from 'cookie-parser';
 import { config } from 'dotenv';
 
 // Import routes
-import vocabularyRoutes from './routes/vocabulary';
-import attemptsRoutes from './routes/attempts';
-import statisticsRoutes from './routes/statistics';
-import imageRoutes from './routes/images';
 import authRoutes from './routes/authRoutes';
+import vocabularyRoutes from './routes/vocabulary';
+import imageRoutes from './routes/images';
+import storageRoutes from './routes/storageRoutes';
 
 // Load environment variables
 config();
 
 const app = express();
+const port = process.env.PORT || 3001;
 
 // Middleware
 app.use(helmet()); // Security headers
@@ -33,17 +33,22 @@ app.use(cookieParser()); // Parse cookies
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/vocabulary', vocabularyRoutes);
-app.use('/api/attempts', attemptsRoutes);
-app.use('/api/statistics', statisticsRoutes);
 app.use('/api/images', imageRoutes);
+app.use('/api/storage', storageRoutes);
+
+// Root path
+app.get('/', (req, res) => {
+  res.send('English Learning App Backend');
+});
 
 // Error handling middleware
-app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
+app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error(err.stack);
-  res.status(500).json({
-    error: 'Internal Server Error',
-    message: process.env.NODE_ENV === 'development' ? err.message : undefined
-  });
+  res.status(500).send('Something broke!');
+});
+
+app.listen(port, () => {
+  console.log(`Server is running on http://localhost:${port}`);
 });
 
 export default app; 

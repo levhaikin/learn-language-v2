@@ -120,13 +120,6 @@ const VocabularyLesson: React.FC<VocabularyLessonProps> = ({
     
     if (isAnswerCorrect) {
       try {
-        // Record the attempt
-        await api.attempts.create({
-          word: currentWord.word,
-          isCorrect: true,
-          timeTaken,
-          category: currentWord.category
-        });
 
         // Calculate points
         const accuracyPoints = 10 - hintPenalty; // Base points minus hint penalty

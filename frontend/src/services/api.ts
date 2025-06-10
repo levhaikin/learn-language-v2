@@ -64,25 +64,4 @@ export const api = {
     }
   },
 
-  // Learning attempts endpoints
-  attempts: {
-    create: async (attempt: {
-      word: string;
-      isCorrect: boolean;
-      timeTaken: number;
-      category: string;
-    }): Promise<void> => {
-      await axiosInstance.post('/attempts', attempt);
-    },
-
-    getHistory: async () => {
-      const response = await axiosInstance.get('/attempts');
-      return response.data;
-    },
-
-    getWordAttempts: async (word: string) => {
-      const response = await axiosInstance.get(`/attempts/word/${encodeURIComponent(word)}`);
-      return response.data;
-    }
-  }
 }; 

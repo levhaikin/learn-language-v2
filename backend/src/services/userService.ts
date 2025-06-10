@@ -133,7 +133,6 @@ export class UserService {
     if (!payload) {
       return { success: false };
     }
-
     // Verify token exists in database and get user info
     const userResult = await sql`
       SELECT u.id, u.username, u.firstname

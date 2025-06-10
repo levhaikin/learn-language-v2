@@ -4,7 +4,6 @@ import { StorageInterface } from './StorageInterface';
 
 interface LocalStorageOptions {
   prefix?: string;
-  maxAttempts?: number;
 }
 
 export class LocalStorageAdapter implements StorageInterface {
