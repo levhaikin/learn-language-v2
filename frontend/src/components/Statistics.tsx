@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { WordStats } from '../types';
 import WrongAttemptsPlot from './WrongAttemptsPlot';
-import { historyStorage } from '../storage/storageInstance';
+import { storageInstance } from '../storage/storageInstance';
 import { WordAttempt } from '../types/history';
 
 interface StatisticsProps {
@@ -25,7 +25,7 @@ const Statistics: React.FC<StatisticsProps> = () => {
 
   useEffect(() => {
     async function fetchAndAggregate() {
-      const attempts: WordAttempt[] = await historyStorage.getAllAttempts();
+      const attempts: WordAttempt[] = await storageInstance.getAllAttempts();
       // Aggregate attempts into wordStats
       const statsMap: { [key: string]: WordStats } = {};
       for (const attempt of attempts) {

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { historyStorage } from "../storage/storageInstance";
+import { storageInstance } from "../storage/storageInstance";
 import { WordAttempt } from "../types/history";
 import {
   LineChart,
@@ -123,7 +123,7 @@ export default function WrongAttemptsPlot() {
 
   useEffect(() => {
     async function fetchData() {
-      const attempts = await historyStorage.getAllAttempts();
+      const attempts = await storageInstance.getAllAttempts();
       setData(groupAttemptsByInterval(attempts, interval));
     }
     fetchData();

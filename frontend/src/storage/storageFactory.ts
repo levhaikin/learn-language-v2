@@ -1,9 +1,9 @@
-import { HistoryStorage } from './HistoryStorage';
+import { StorageInterface } from './StorageInterface';
 import { LocalStorageAdapter } from './LocalStorageAdapter';
 import { StorageType } from '../config/storage';
 
 export class StorageFactory {
-  static createStorage(type: StorageType, options?: any): HistoryStorage {
+  static createStorage(type: StorageType, options?: any): StorageInterface {
     switch (type) {
       case 'localStorage':
         return new LocalStorageAdapter(options);

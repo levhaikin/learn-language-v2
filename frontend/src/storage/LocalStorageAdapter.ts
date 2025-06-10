@@ -1,13 +1,13 @@
 import { WordAttempt } from '../types/history';
 import { UserScores } from '../types/scores';
-import { HistoryStorage } from './HistoryStorage';
+import { StorageInterface } from './StorageInterface';
 
 interface LocalStorageOptions {
   prefix?: string;
   maxAttempts?: number;
 }
 
-export class LocalStorageAdapter implements HistoryStorage {
+export class LocalStorageAdapter implements StorageInterface {
   private readonly storageKey: string;
   private readonly scoresKey: string;
 
