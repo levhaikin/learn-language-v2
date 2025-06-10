@@ -31,11 +31,13 @@ export interface AuthResponse {
 
 class AuthService {
   private isAuthenticatedFlag: boolean = false;
+  private currentUsername: string | null = null;
 
   async signUp(data: SignUpData): Promise<AuthResponse> {
     const response = await axiosInstance.post(`${API_URL}/auth/signup`, data);
     if (response.data.userId) {
       this.isAuthenticatedFlag = true;
+      this.currentUsername = data.username;
     }
     return response.data;
   }
@@ -44,6 +46,7 @@ class AuthService {
     const response = await axiosInstance.post(`${API_URL}/auth/signin`, data);
     if (response.data.userId) {
       this.isAuthenticatedFlag = true;
+      this.currentUsername = data.username;
     }
     return response.data;
   }
@@ -51,6 +54,7 @@ class AuthService {
   async logout(): Promise<void> {
     await axiosInstance.post(`${API_URL}/auth/logout`);
     this.isAuthenticatedFlag = false;
+    this.currentUsername = null;
   }
 
   async isAuthenticated(): Promise<boolean> {
@@ -63,6 +67,10 @@ class AuthService {
     }
     
     return this.isAuthenticatedFlag;
+  }
+
+  getUsername(): string | null {
+    return this.currentUsername;
   }
 
   // Setup axios interceptor for token refresh

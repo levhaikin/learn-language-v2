@@ -5,12 +5,14 @@ import { authService } from '../services/authService';
 interface AuthState {
   isAuthenticated: boolean;
   userId: number | null;
+  username: string | null;
 }
 
 export function useAuth() {
   const [authState, setAuthState] = useState<AuthState>({
     isAuthenticated: false,  // Start with false
     userId: null,
+    username: null,
   });
   const navigate = useNavigate();
 
@@ -20,7 +22,8 @@ export function useAuth() {
       const isAuthenticated = await authService.isAuthenticated();
       setAuthState(prev => ({
         ...prev,
-        isAuthenticated
+        isAuthenticated,
+        username: authService.getUsername(),
       }));
     };
     
@@ -31,6 +34,7 @@ export function useAuth() {
     setAuthState({
       isAuthenticated: true,
       userId: null,
+      username: authService.getUsername(),
     });
     navigate('/');
   };
@@ -40,6 +44,7 @@ export function useAuth() {
     setAuthState({
       isAuthenticated: false,
       userId: null,
+      username: null,
     });
     navigate('/auth');
   };
@@ -47,6 +52,7 @@ export function useAuth() {
   return {
     isAuthenticated: authState.isAuthenticated,
     userId: authState.userId,
+    username: authState.username,
     onSignIn: handleSignIn,
     onSignOut: handleSignOut,
   };

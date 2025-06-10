@@ -17,7 +17,7 @@ const Navigation: React.FC = () => {
   const path = location.pathname;
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const { onSignOut } = useAuth();
+  const { onSignOut, username } = useAuth();
 
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -83,16 +83,30 @@ const Navigation: React.FC = () => {
           <Link to="/statistics" className="nav-link">
             📊 Statistics
           </Link>
-          <IconButton
-            onClick={handleProfileMenuOpen}
-            size="small"
-            sx={{ ml: 2 }}
-            aria-controls={Boolean(anchorEl) ? 'profile-menu' : undefined}
-            aria-haspopup="true"
-            aria-expanded={Boolean(anchorEl) ? 'true' : undefined}
-          >
-            <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.main' }}>U</Avatar>
-          </IconButton>
+          <div className="profile-section">
+            <Typography
+              variant="body1"
+              sx={{
+                mr: 1,
+                display: 'inline-block',
+                verticalAlign: 'middle'
+              }}
+            >
+              {username || 'User'}
+            </Typography>
+            <IconButton
+              onClick={handleProfileMenuOpen}
+              size="small"
+              sx={{ ml: 0 }}
+              aria-controls={Boolean(anchorEl) ? 'profile-menu' : undefined}
+              aria-haspopup="true"
+              aria-expanded={Boolean(anchorEl) ? 'true' : undefined}
+            >
+              <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.main' }}>
+                {username ? username[0].toUpperCase() : 'U'}
+              </Avatar>
+            </IconButton>
+          </div>
         </div>
       </nav>
       {getBreadcrumbs()}
@@ -121,8 +135,12 @@ const Navigation: React.FC = () => {
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
         <MenuItem onClick={handleProfileMenuClose}>
-          <Avatar sx={{ bgcolor: 'primary.main' }}>U</Avatar>
-          <Typography variant="body1" sx={{ ml: 1 }}>My Profile</Typography>
+          <Avatar sx={{ bgcolor: 'primary.main' }}>
+            {username ? username[0].toUpperCase() : 'U'}
+          </Avatar>
+          <Typography variant="body1" sx={{ ml: 1 }}>
+            {username || 'My Profile'}
+          </Typography>
         </MenuItem>
         <Divider />
         <MenuItem onClick={handleLogout}>

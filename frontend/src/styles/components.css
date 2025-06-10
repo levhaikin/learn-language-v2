@@ -797,6 +797,19 @@
 }
 
 /* Profile Menu Styles */
+.profile-section {
+  display: flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 20px;
+  transition: background-color 0.2s;
+  margin-left: 1rem;
+}
+
+.profile-section:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
 .profile-button {
   margin-left: 1rem;
   display: flex;
