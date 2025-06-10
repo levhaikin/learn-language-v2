@@ -120,15 +120,15 @@ export const refreshToken = async (req: Request, res: Response): Promise<void> =
       return;
     }
 
-    // Set new cookies
+    // Set new access token cookie
     res.cookie('accessToken', result.accessToken, {
       ...cookieOptions,
       maxAge: 15 * 60 * 1000 // 15 minutes
     });
-    res.cookie('refreshToken', result.refreshToken, cookieOptions);
 
     res.status(200).json({
-      message: 'Tokens refreshed successfully'
+      success: true,
+      user: result.user
     });
   } catch (error) {
     console.error('Token refresh error:', error);

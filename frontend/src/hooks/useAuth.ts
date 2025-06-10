@@ -4,35 +4,48 @@ import { authService } from '../services/authService';
 
 interface AuthState {
   isAuthenticated: boolean;
+  isLoading: boolean;
   userId: number | null;
   username: string | null;
 }
 
 export function useAuth() {
   const [authState, setAuthState] = useState<AuthState>({
-    isAuthenticated: false,  // Start with false
+    isAuthenticated: false,
+    isLoading: true,
     userId: null,
     username: null,
   });
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check authentication status on mount
     const checkAuth = async () => {
-      const isAuthenticated = await authService.isAuthenticated();
-      setAuthState(prev => ({
-        ...prev,
-        isAuthenticated,
-        username: authService.getUsername(),
-      }));
+      try {
+        const isAuthenticated = await authService.isAuthenticated();
+        setAuthState({
+          isAuthenticated,
+          isLoading: false,
+          userId: null, // You might want to get this from authService too
+          username: authService.getUsername(),
+        });
+      } catch (e) {
+        setAuthState({
+          isAuthenticated: false,
+          isLoading: false,
+          userId: null,
+          username: null,
+        });
+      }
     };
     
     checkAuth();
   }, []);
 
   const handleSignIn = async () => {
+    // This should be updated to get user from signIn method if it returns it
     setAuthState({
       isAuthenticated: true,
+      isLoading: false,
       userId: null,
       username: authService.getUsername(),
     });
@@ -43,17 +56,12 @@ export function useAuth() {
     await authService.logout();
     setAuthState({
       isAuthenticated: false,
+      isLoading: false,
       userId: null,
       username: null,
     });
     navigate('/auth');
   };
 
-  return {
-    isAuthenticated: authState.isAuthenticated,
-    userId: authState.userId,
-    username: authState.username,
-    onSignIn: handleSignIn,
-    onSignOut: handleSignOut,
-  };
+  return { ...authState, onSignIn: handleSignIn, onSignOut: handleSignOut };
 } 

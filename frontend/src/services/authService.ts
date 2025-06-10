@@ -25,13 +25,24 @@ export interface SignInData {
 }
 
 export interface AuthResponse {
-  userId: number;
-  message: string;
+  userId?: number;
+  message?: string;
+  success?: boolean;
+  user?: {
+    userId: number;
+    username: string;
+    firstName: string;
+  };
 }
 
 class AuthService {
   private isAuthenticatedFlag: boolean = false;
   private currentUsername: string | null = null;
+  private currentUser: {
+    userId: number;
+    username: string;
+    firstName: string;
+  } | null = null;
 
   async signUp(data: SignUpData): Promise<AuthResponse> {
     const response = await axiosInstance.post(`${API_URL}/auth/signup`, data);
@@ -58,15 +69,29 @@ class AuthService {
   }
 
   async isAuthenticated(): Promise<boolean> {
-    try {
-      // Try to refresh the token
-      await axiosInstance.post(`${API_URL}/auth/refresh-token`);
-      this.isAuthenticatedFlag = true;
-    } catch (refreshError) {
-      this.isAuthenticatedFlag = false;
+    if (this.isAuthenticatedFlag) {
+      return true;
     }
     
-    return this.isAuthenticatedFlag;
+    try {
+      const response = await axiosInstance.post<AuthResponse>(`${API_URL}/auth/refresh-token`);
+      
+      if (response.data.success && response.data.user) {
+        this.isAuthenticatedFlag = true;
+        this.currentUser = response.data.user;
+        this.currentUsername = response.data.user.username;
+        return true;
+      }
+      this.isAuthenticatedFlag = false;
+      this.currentUser = null;
+      this.currentUsername = null;
+      return false;
+    } catch (refreshError) {
+      this.isAuthenticatedFlag = false;
+      this.currentUser = null;
+      this.currentUsername = null;
+      return false;
+    }
   }
 
   getUsername(): string | null {
@@ -80,19 +105,22 @@ class AuthService {
       async (error) => {
         const originalRequest = error.config;
 
-        // If the error is 401 and we haven't tried to refresh the token yet
         if (error.response.status === 401 && !originalRequest._retry) {
           originalRequest._retry = true;
-          
+
           try {
-            // Try to refresh the token
-            await axios.post(`${API_URL}/auth/refresh-token`);
-            
-            // Retry the original request
+            const refreshResponse = await axios.post<AuthResponse>(`${API_URL}/auth/refresh-token`);
+            if (refreshResponse.data.success && refreshResponse.data.user) {
+              this.isAuthenticatedFlag = true;
+              this.currentUser = refreshResponse.data.user;
+              this.currentUsername = refreshResponse.data.user.username;
+            }
             return axios(originalRequest);
           } catch (refreshError) {
-            // If refresh fails, user needs to login again
             this.isAuthenticatedFlag = false;
+            this.currentUsername = null;
+            this.currentUser = null;
+            // Optionally navigate to login or handle logout
             throw refreshError;
           }
         }

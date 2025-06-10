@@ -13,7 +13,7 @@ import { UserProgress } from './types';
 import { storeItems } from './components/Store';
 import './styles/components.css';
 import AuthPage from './pages/Auth/AuthPage';
-import { authService } from './services/authService';
+import { useAuth } from './hooks/useAuth';
 
 interface ToastMessage {
   message: string;
@@ -43,24 +43,9 @@ const theme = createTheme({
 
 // Protected Route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const [isChecking, setIsChecking] = useState(true);
-  const [isAuthed, setIsAuthed] = useState(false);
-  
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const authenticated = await authService.isAuthenticated();
-        setIsAuthed(authenticated);
-      } finally {
-        setIsChecking(false);
-      }
-    };
-    
-    checkAuth();
-  }, []);
+  const { isAuthenticated, isLoading } = useAuth();
 
-  // Show loading state while checking authentication
-  if (isChecking) {
+  if (isLoading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
         <CircularProgress />
@@ -68,8 +53,11 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     );
   }
 
-  // Once checked, either redirect or show protected content
-  return isAuthed ? <>{children}</> : <Navigate to="/auth" />;
+  if (!isAuthenticated) {
+    return <Navigate to="/auth" />;
+  }
+
+  return <>{children}</>;
 };
 
 function App() {

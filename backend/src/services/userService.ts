@@ -16,6 +16,11 @@ interface AuthResponse {
   username?: string;
   accessToken?: string;
   refreshToken?: string;
+  user?: {
+    userId: number;
+    username: string;
+    firstName: string;
+  };
 }
 
 export class UserService {
@@ -129,29 +134,37 @@ export class UserService {
       return { success: false };
     }
 
-    // Verify token exists in database
-    const tokenResult = await sql`
-      SELECT user_id 
-      FROM refresh_tokens 
-      WHERE token = ${oldRefreshToken}
+    // Verify token exists in database and get user info
+    const userResult = await sql`
+      SELECT u.id, u.username, u.firstname
+      FROM users u
+      JOIN refresh_tokens rt ON u.id = rt.user_id
+      WHERE rt.token = ${oldRefreshToken} AND u.id = ${payload.userId}
     `;
 
-    if (tokenResult.length === 0) {
+    if (userResult.length === 0) {
       return { success: false };
     }
+    
+    const user = userResult[0];
 
     const tokens = this.jwtService.generateTokens({
-      userId: payload.userId,
-      username: payload.username
+      userId: user.id,
+      username: user.username
     });
 
     // Update refresh token in database
-    await this.storeRefreshToken(payload.userId, tokens.refreshToken);
+    await this.storeRefreshToken(user.id, tokens.refreshToken);
 
     return {
       success: true,
-      userId: payload.userId,
-      username: payload.username,
+      userId: user.id,
+      username: user.username,
+      user: {
+        userId: user.id,
+        username: user.username,
+        firstName: user.firstname
+      },
       ...tokens
     };
   }
