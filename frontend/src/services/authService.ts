@@ -11,6 +11,9 @@ const axiosInstance = axios.create({
     },
   });
 
+// add withCredentials to axios instance
+axiosInstance.defaults.withCredentials = true;
+
 export interface SignUpData {
   username: string;
   password: string;
