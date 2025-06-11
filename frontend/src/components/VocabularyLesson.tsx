@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { api, Word, WordImage } from '../services/api';
 import Timer from './Timer';
 import PointsPopup from './PointsPopup';
+import WrongPopup from './WrongPopup';
 import { TextField, Button, Box, Stack } from '@mui/material';
 import { storageInstance } from '../storage/storageInstance';
 import { WordAttempt } from '../types/history';
@@ -21,6 +22,7 @@ const VocabularyLesson: React.FC<VocabularyLessonProps> = ({ onScoresUpdated }) 
   const [imageLoading, setImageLoading] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [earnedPoints, setEarnedPoints] = useState({ accuracy: 0, speed: 0 });
+  const [showWrongPopup, setShowWrongPopup] = useState(false);
 
   const [startTime, setStartTime] = useState(0);
   const [isTimerRunning, setIsTimerRunning] = useState(true);
@@ -123,12 +125,18 @@ const VocabularyLesson: React.FC<VocabularyLessonProps> = ({ onScoresUpdated }) 
         setEarnedPoints({ accuracy: accuracyPoints, speed: speedPoints });
         setShowPopup(true);
         setTimeout(() => setShowPopup(false), 2000);
+      } else {
+        // incorrect answer feedback
+        setShowWrongPopup(true);
+        setTimeout(() => setShowWrongPopup(false), 1500);
       }
     } catch (error) {
       console.error('Failed to save attempt or update scores:', error);
     }
 
-    setShowMeaning(true);
+    if (isAnswerCorrect) {
+      setShowMeaning(true);
+    }
     setIsCorrect(isAnswerCorrect);
   };
 
@@ -221,8 +229,15 @@ const VocabularyLesson: React.FC<VocabularyLessonProps> = ({ onScoresUpdated }) 
           accuracyPoints={earnedPoints.accuracy}
           speedPoints={earnedPoints.speed}
           speedFeedback={earnedPoints.speed >= 8 ? "Lightning fast!" : earnedPoints.speed >= 5 ? "Great speed!" : earnedPoints.speed >= 3 ? "Good timing!" : "Nice work!"}
-          position={{ x: window.innerWidth / 2 - 100, y: window.innerHeight / 2 - 50 }}
+          position={{ x: window.innerWidth / 2, y: window.innerHeight / 2 }}
           onClose={() => setShowPopup(false)}
+        />
+      )}
+      {/* Wrong answer popup */}
+      {showWrongPopup && (
+        <WrongPopup
+          message="Try again!"
+          position={{ x: window.innerWidth / 2, y: window.innerHeight / 2 - 80 }}
         />
       )}
     </div>
