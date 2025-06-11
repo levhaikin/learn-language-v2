@@ -4,9 +4,7 @@ import WrongAttemptsPlot from './WrongAttemptsPlot';
 import { storageInstance } from '../storage/storageInstance';
 import { WordAttempt } from '../types/history';
 
-interface StatisticsProps {
-  wordStats?: { [key: string]: WordStats }; // now optional, not used
-}
+interface StatisticsProps {}
 
 type SortKey = 'word' | 'attempts' | 'successRate' | 'failedRate' | 'bestTime' | 'medianTime' | 'slowestTime';
 type SortDirection = 'asc' | 'desc';

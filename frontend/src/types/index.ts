@@ -32,5 +32,4 @@ export interface UserProgress {
   accuracyPoints: number;
   speedPoints: number;
   ownedItems: string[]; // Array of item IDs
-  wordStats: { [key: string]: WordStats }; // Map of word to its stats
 } 

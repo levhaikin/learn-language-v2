@@ -65,32 +65,12 @@ function App() {
     accuracyPoints: 0,
     speedPoints: 0,
     ownedItems: [],
-    wordStats: {},
   });
   const [toast, setToast] = useState<ToastMessage | null>(null);
 
   const handleWordAttempt = (word: string, isCorrect: boolean, timeTaken: number) => {
-    setUserProgress(prev => {
-      const currentStats = prev.wordStats[word] || {
-        word,
-        attempts: 0,
-        correctAttempts: 0,
-        attemptTimes: [],
-      };
-
-      return {
-        ...prev,
-        wordStats: {
-          ...prev.wordStats,
-          [word]: {
-            ...currentStats,
-            attempts: currentStats.attempts + 1,
-            correctAttempts: currentStats.correctAttempts + (isCorrect ? 1 : 0),
-            attemptTimes: [...currentStats.attemptTimes, timeTaken],
-          },
-        },
-      };
-    });
+    // This logic is now handled by the backend storage or another service.
+    // The App component no longer needs to manage word-specific stats.
   };
 
   const handlePurchase = (itemId: string) => {
@@ -188,7 +168,7 @@ function App() {
                           } 
                         />
                         <Route path="/scores" element={<Scores userProgress={userProgress} />} />
-                        <Route path="/statistics" element={<Statistics wordStats={userProgress.wordStats} />} />
+                        <Route path="/statistics" element={<Statistics />} />
                         <Route
                           path="/matching"
                           element={
