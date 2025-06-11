@@ -115,7 +115,6 @@ const VocabularyLesson: React.FC<VocabularyLessonProps> = () => {
             ) : (
               currentImage && <img src={currentImage.url} alt={currentImage.alt} className="word-image" />
             )}
-            <p className="pronunciation">/{currentWord.pronunciation}/</p>
             {showMeaning && (
               <p className={`meaning ${isCorrect ? 'correct' : 'incorrect'}`}>
                 {currentWord.translation}
