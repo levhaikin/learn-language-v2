@@ -827,4 +827,38 @@
 /* Ensure the avatar stays circular */
 .MuiAvatar-root {
   border-radius: 50%;
+}
+
+.word-card .pronunciation {
+  font-style: italic;
+  color: #666;
+}
+
+/* 
+  The following styles are now handled by Material-UI components
+  and can be removed.
+*/
+/*
+.answer-form {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.answer-input {
+  padding: 0.5rem;
+  font-size: 1rem;
+  width: 200px;
+  margin-right: 0.5rem;
+}
+
+.submit-button, .lesson-controls button {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+}
+*/
+
+.lesson-controls {
+  margin-top: 1rem;
 } 

@@ -6,6 +6,16 @@ import Store from './Store';
 import '../styles/WordMatching.css';
 import '../styles/components.css';
 
+export interface WordPair {
+  word: string;
+  translation: string;
+  category: string;
+}
+
+interface WordMatchingProps {
+  words: WordPair[];
+}
+
 interface WordCard {
   text: string;
   type: 'word' | 'translation';
@@ -13,15 +23,6 @@ interface WordCard {
   id: string;
   isMatched: boolean;
   isWrong?: boolean;
-}
-
-interface WordMatchingProps {
-  words: Word[];
-  userProgress: UserProgress;
-  onComplete?: (score: number) => void;
-  onPointsEarned: (accuracyPoints: number, speedPoints: number) => void;
-  onPurchase: (itemId: string) => void;
-  onSell: (itemId: string) => void;
 }
 
 // Time thresholds in milliseconds
@@ -60,7 +61,7 @@ const getSpeedFeedback = (speedPoints: number): string => {
   }
 };
 
-const WordMatching: React.FC<WordMatchingProps> = ({ words, userProgress, onComplete, onPointsEarned, onPurchase, onSell }) => {
+const WordMatching: React.FC<WordMatchingProps> = ({ words }) => {
   const [cards, setCards] = useState<WordCard[]>([]);
   const [selectedCard, setSelectedCard] = useState<WordCard | null>(null);
   const [score, setScore] = useState(0);
@@ -159,7 +160,7 @@ const WordMatching: React.FC<WordMatchingProps> = ({ words, userProgress, onComp
 
         // Check if all pairs are matched
         if (updatedCards.every((c) => c.isMatched)) {
-          onComplete?.(score + 1);
+          // onComplete?.(score + 1);
         }
       } else {
         // Wrong match - show feedback
@@ -215,9 +216,9 @@ const WordMatching: React.FC<WordMatchingProps> = ({ words, userProgress, onComp
         />
       )}
       <Store
-        userProgress={userProgress}
-        onPurchase={onPurchase}
-        onSell={onSell}
+        userProgress={{} as UserProgress}
+        onPurchase={(itemId: string) => {}}
+        onSell={(itemId: string) => {}}
       />
     </div>
   );
