@@ -13,7 +13,7 @@ const axiosInstance = axios.create({
 
 export interface Word {
   word: string;
-  translation: string;
+  meaning: string;
   pronunciation?: string;
   definition?: string;
   examples?: string[];

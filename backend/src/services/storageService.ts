@@ -5,7 +5,6 @@ import { UserScores } from '../types/UserScores';
 export class StorageService {
   async saveAttempt(userId: number, attempt: WordAttempt): Promise<void> {
     try {
-      // console.log('Saving attempt to database:', attempt);
       await sql`
         INSERT INTO user_attempts (
           user_id, word, user_answer, is_correct, "timestamp", time_taken,
@@ -56,13 +55,13 @@ export class StorageService {
   async saveUserScores(userId: number, scores: UserScores): Promise<void> {
     try {
       await sql`
-        INSERT INTO user_scores (user_id, accuracy_points, speed_points, last_updated)
-        VALUES (${userId}, ${scores.accuracyPoints}, ${scores.speedPoints}, ${scores.lastUpdated})
+        INSERT INTO user_scores (user_id, accuracy_points, speed_points, timestamp)
+        VALUES (${userId}, ${scores.accuracyPoints}, ${scores.speedPoints}, ${scores.timestamp})
         ON CONFLICT (user_id)
         DO UPDATE SET
           accuracy_points = EXCLUDED.accuracy_points,
           speed_points = EXCLUDED.speed_points,
-          last_updated = EXCLUDED.last_updated
+          timestamp = EXCLUDED.timestamp
       `;
     } catch (error) {
       console.error('Error saving user scores to database:', error);
@@ -76,7 +75,7 @@ export class StorageService {
         SELECT
           accuracy_points,
           speed_points,
-          last_updated
+          timestamp
         FROM user_scores
         WHERE user_id = ${userId}
       `;
@@ -87,7 +86,7 @@ export class StorageService {
       return {
         accuracyPoints: row.accuracy_points,
         speedPoints: row.speed_points,
-        lastUpdated: Number(row.last_updated),
+        timestamp: Number(row.timestamp),
       };
     } catch (error) {
       console.error('Error retrieving user scores from database:', error);

@@ -68,7 +68,7 @@ function App() {
           setUserProgress({
             accuracyPoints: scores.accuracyPoints,
             speedPoints: scores.speedPoints,
-            ownedItems: scores.ownedItems || []
+            ownedItems: [] // scores.ownedItems || []
           });
         }
       } catch (error) {
@@ -98,7 +98,6 @@ function App() {
         await storageInstance.saveUserScores({
           accuracyPoints: newProgress.accuracyPoints,
           speedPoints: newProgress.speedPoints,
-          ownedItems: newProgress.ownedItems,
           timestamp: Date.now()
         });
 
@@ -129,7 +128,6 @@ function App() {
       await storageInstance.saveUserScores({
         accuracyPoints: newProgress.accuracyPoints,
         speedPoints: newProgress.speedPoints,
-        ownedItems: newProgress.ownedItems,
         timestamp: Date.now()
       });
 

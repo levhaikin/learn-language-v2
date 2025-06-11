@@ -3,6 +3,8 @@ import { api, Word, WordImage } from '../services/api';
 import Timer from './Timer';
 import PointsPopup from './PointsPopup';
 import { TextField, Button, Box, Stack } from '@mui/material';
+import { storageInstance } from '../storage/storageInstance';
+import { WordAttempt } from '../types/history';
 
 interface VocabularyLessonProps {}
 
@@ -67,22 +69,57 @@ const VocabularyLesson: React.FC<VocabularyLessonProps> = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (showMeaning) return;
 
     setIsTimerRunning(false);
     const currentWord = words[currentWordIndex];
-    const isAnswerCorrect = inputValue.trim().toLowerCase() === currentWord.translation.toLowerCase();
+    const isAnswerCorrect = inputValue.trim().toLowerCase() === currentWord.word.toLowerCase();
+    console.log(inputValue);
+    console.log(currentWord);
+    const timeTaken = Date.now() - startTime;
 
-    if (isAnswerCorrect) {
-      const hintPenalty = showHint ? 5 : 0;
-      const accuracyPoints = 10 - hintPenalty;
-      const speedPoints = Math.max(0, 10 - Math.floor((Date.now() - startTime) / 1000));
-      
-      setEarnedPoints({ accuracy: accuracyPoints, speed: speedPoints });
-      setShowPopup(true);
-      setTimeout(() => setShowPopup(false), 2000);
+    // Calculate points
+    const hintPenalty = showHint ? 5 : 0;
+    const accuracyPoints = isAnswerCorrect ? (10 - hintPenalty) : 0;
+    const speedPoints = isAnswerCorrect ? Math.max(0, 10 - Math.floor(timeTaken / 1000)) : 0;
+
+    // Create attempt record
+    const attempt: WordAttempt = {
+      word: currentWord.word,
+      userAnswer: inputValue.trim(),
+      isCorrect: isAnswerCorrect,
+      timestamp: Date.now(),
+      timeTaken: timeTaken,
+      accuracyPoints: accuracyPoints,
+      speedPoints: speedPoints,
+      category: currentWord.category,
+      hintUsed: showHint,
+      attemptsCount: 1
+    };
+
+    try {
+      // Save the attempt
+      await storageInstance.saveAttempt(attempt);
+
+      // Update user scores if correct
+      if (isAnswerCorrect) {
+        const currentScores = await storageInstance.getUserScores();
+        const newScores = {
+          accuracyPoints: (currentScores?.accuracyPoints || 0) + accuracyPoints,
+          speedPoints: (currentScores?.speedPoints || 0) + speedPoints,
+          timestamp: Date.now()
+        };
+        
+        await storageInstance.saveUserScores(newScores);
+        
+        setEarnedPoints({ accuracy: accuracyPoints, speed: speedPoints });
+        setShowPopup(true);
+        setTimeout(() => setShowPopup(false), 2000);
+      }
+    } catch (error) {
+      console.error('Failed to save attempt or update scores:', error);
     }
 
     setShowMeaning(true);
@@ -117,7 +154,7 @@ const VocabularyLesson: React.FC<VocabularyLessonProps> = () => {
             )}
             {showMeaning && (
               <p className={`meaning ${isCorrect ? 'correct' : 'incorrect'}`}>
-                {currentWord.translation}
+                {currentWord.meaning}
               </p>
             )}
             {showHint && !showMeaning && (
@@ -137,7 +174,7 @@ const VocabularyLesson: React.FC<VocabularyLessonProps> = () => {
                   fullWidth
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
-                  placeholder="Type the translation"
+                  placeholder="Type the word"
                   disabled={showMeaning}
                   autoComplete="off"
                 />

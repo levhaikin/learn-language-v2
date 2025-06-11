@@ -11,7 +11,7 @@ class VocabularyService {
       name: category.category,
       words: category.items.map((item: any) => ({
         word: item.word,
-        translation: item.meaning,
+        meaning: item.meaning,
         pronunciation: item.pronunciation,
         definition: item.definition,
         examples: item.examples,
