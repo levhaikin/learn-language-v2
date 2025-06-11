@@ -7,12 +7,12 @@
 
 .wrong-popup-content {
   background-color: rgba(255, 87, 87, 0.95);
-  padding: 20px 32px;
-  border-radius: 16px;
+  padding: 40px 64px;
+  border-radius: 32px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
   text-align: center;
-  min-width: 220px;
-  font-size: 1.25rem;
+  min-width: 440px;
+  font-size: 2.5rem;
   font-weight: bold;
   color: #fff;
 }
