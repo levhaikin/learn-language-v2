@@ -214,6 +214,17 @@ const VocabularyLesson: React.FC<VocabularyLessonProps> = ({ onScoresUpdated }) 
           </div>
         </div>
       </div>
+      
+      {/* Points Popup */}
+      {showPopup && (
+        <PointsPopup
+          accuracyPoints={earnedPoints.accuracy}
+          speedPoints={earnedPoints.speed}
+          speedFeedback={earnedPoints.speed >= 8 ? "Lightning fast!" : earnedPoints.speed >= 5 ? "Great speed!" : earnedPoints.speed >= 3 ? "Good timing!" : "Nice work!"}
+          position={{ x: window.innerWidth / 2 - 100, y: window.innerHeight / 2 - 50 }}
+          onClose={() => setShowPopup(false)}
+        />
+      )}
     </div>
   );
 };
