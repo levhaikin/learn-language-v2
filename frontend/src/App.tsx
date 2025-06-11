@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { ThemeProvider, createTheme, Box, CircularProgress, Fab } from '@mui/material';
-import StorefrontIcon from '@mui/icons-material/Storefront';
+import { ThemeProvider, createTheme, Box, CircularProgress } from '@mui/material';
 import Navigation from './components/Navigation';
 import Home from './components/Home';
 import VocabularyLesson from './components/VocabularyLesson';
@@ -54,7 +53,6 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 function App() {
-  const [isStoreOpen, setIsStoreOpen] = useState(false);
   const [userProgress, setUserProgress] = useState<UserProgress>({
     accuracyPoints: 0,
     speedPoints: 0,
@@ -169,43 +167,11 @@ function App() {
                     </main>
                     
                     {/* Global Store Drawer */}
-                    <Box
-                      sx={{
-                        position: 'fixed',
-                        bottom: isStoreOpen ? '0' : '-400px',
-                        left: '0',
-                        right: '0',
-                        height: '400px',
-                        backgroundColor: 'background.paper',
-                        boxShadow: 3,
-                        borderTop: '2px solid',
-                        borderColor: 'primary.main',
-                        transition: 'bottom 0.3s ease-in-out',
-                        zIndex: 1200,
-                        overflow: 'hidden'
-                      }}
-                    >
-                      <Store
-                        userProgress={userProgress}
-                        onPurchase={handlePurchase}
-                        onSell={handleSell}
-                      />
-                    </Box>
-
-                    {/* Store Toggle Button */}
-                    <Fab
-                      color="primary"
-                      aria-label="store"
-                      sx={{
-                        position: 'fixed',
-                        bottom: 16,
-                        right: 16,
-                        zIndex: 1300
-                      }}
-                      onClick={() => setIsStoreOpen(!isStoreOpen)}
-                    >
-                      <StorefrontIcon />
-                    </Fab>
+                    <Store
+                      userProgress={userProgress}
+                      onPurchase={handlePurchase}
+                      onSell={handleSell}
+                    />
                   </div>
                 </ProtectedRoute>
               }
