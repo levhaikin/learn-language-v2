@@ -6,9 +6,11 @@ import { TextField, Button, Box, Stack } from '@mui/material';
 import { storageInstance } from '../storage/storageInstance';
 import { WordAttempt } from '../types/history';
 
-interface VocabularyLessonProps {}
+interface VocabularyLessonProps {
+  onScoresUpdated?: () => void;
+}
 
-const VocabularyLesson: React.FC<VocabularyLessonProps> = () => {
+const VocabularyLesson: React.FC<VocabularyLessonProps> = ({ onScoresUpdated }) => {
   const [words, setWords] = useState<Word[]>([]);
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [inputValue, setInputValue] = useState('');
@@ -105,14 +107,18 @@ const VocabularyLesson: React.FC<VocabularyLessonProps> = () => {
 
       // Update user scores if correct
       if (isAnswerCorrect) {
-        const currentScores = await storageInstance.getUserScores();
-        const newScores = {
-          accuracyPoints: (currentScores?.accuracyPoints || 0) + accuracyPoints,
-          speedPoints: (currentScores?.speedPoints || 0) + speedPoints,
+        const currentState = await storageInstance.getUserState();
+        const newState = {
+          accuracyPoints: (currentState?.accuracyPoints || 0) + accuracyPoints,
+          speedPoints: (currentState?.speedPoints || 0) + speedPoints,
+          ownedItems: currentState?.ownedItems || [],
           timestamp: Date.now()
         };
         
-        await storageInstance.saveUserScores(newScores);
+        await storageInstance.saveUserState(newState);
+        
+        // Notify App.tsx that scores were updated
+        onScoresUpdated?.();
         
         setEarnedPoints({ accuracy: accuracyPoints, speed: speedPoints });
         setShowPopup(true);

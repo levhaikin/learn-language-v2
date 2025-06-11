@@ -1,6 +1,6 @@
 import { sql } from '../config/database';
 import { WordAttempt } from '../types/WordAttempt';
-import { UserScores } from '../types/UserScores';
+import { UserState } from '../types/UserState';
 
 export class StorageService {
   async saveAttempt(userId: number, attempt: WordAttempt): Promise<void> {
@@ -52,31 +52,33 @@ export class StorageService {
     }
   }
 
-  async saveUserScores(userId: number, scores: UserScores): Promise<void> {
+  async saveUserState(userId: number, state: UserState): Promise<void> {
     try {
       await sql`
-        INSERT INTO user_scores (user_id, accuracy_points, speed_points, timestamp)
-        VALUES (${userId}, ${scores.accuracyPoints}, ${scores.speedPoints}, ${scores.timestamp})
+        INSERT INTO user_state (user_id, accuracy_points, speed_points, owned_items, timestamp)
+        VALUES (${userId}, ${state.accuracyPoints}, ${state.speedPoints}, ${JSON.stringify(state.ownedItems)}, ${state.timestamp})
         ON CONFLICT (user_id)
         DO UPDATE SET
           accuracy_points = EXCLUDED.accuracy_points,
           speed_points = EXCLUDED.speed_points,
+          owned_items = EXCLUDED.owned_items,
           timestamp = EXCLUDED.timestamp
       `;
     } catch (error) {
-      console.error('Error saving user scores to database:', error);
-      throw new Error('Failed to save user scores.');
+      console.error('Error saving user state to database:', error);
+      throw new Error('Failed to save user state.');
     }
   }
 
-  async getUserScores(userId: number): Promise<UserScores | null> {
+  async getUserState(userId: number): Promise<UserState | null> {
     try {
       const result = await sql`
         SELECT
           accuracy_points,
           speed_points,
+          owned_items,
           timestamp
-        FROM user_scores
+        FROM user_state
         WHERE user_id = ${userId}
       `;
       if (result.length === 0) {
@@ -86,11 +88,12 @@ export class StorageService {
       return {
         accuracyPoints: row.accuracy_points,
         speedPoints: row.speed_points,
+        ownedItems: row.owned_items ? JSON.parse(row.owned_items) : [],
         timestamp: Number(row.timestamp),
       };
     } catch (error) {
-      console.error('Error retrieving user scores from database:', error);
-      throw new Error('Failed to retrieve user scores.');
+      console.error('Error retrieving user state from database:', error);
+      throw new Error('Failed to retrieve user state.');
     }
   }
 } 

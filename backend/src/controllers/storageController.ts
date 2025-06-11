@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { StorageService } from '../services/storageService';
 import { WordAttempt } from '../types/WordAttempt';
-import { UserScores } from '../types/UserScores';
+import { UserState } from '../types/UserState';
 
 const storageService = new StorageService();
 
@@ -38,7 +38,7 @@ export const getAttempts = async (req: Request, res: Response): Promise<void> =>
   }
 };
 
-export const saveScores = async (req: Request, res: Response): Promise<void> => {
+export const saveState = async (req: Request, res: Response): Promise<void> => {
   try {
     const userId = req.user?.userId;
     if (!userId) {
@@ -46,16 +46,16 @@ export const saveScores = async (req: Request, res: Response): Promise<void> => 
       return;
     }
 
-    const scores = req.body as UserScores;
-    await storageService.saveUserScores(userId, scores);
-    res.status(200).json({ message: 'Scores saved successfully' });
+    const state = req.body as UserState;
+    await storageService.saveUserState(userId, state);
+    res.status(200).json({ message: 'User state saved successfully' });
   } catch (error) {
-    console.error('Save scores error:', error);
+    console.error('Save state error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
 
-export const getScores = async (req: Request, res: Response): Promise<void> => {
+export const getState = async (req: Request, res: Response): Promise<void> => {
   try {
     const userId = req.user?.userId;
     if (!userId) {
@@ -63,14 +63,14 @@ export const getScores = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    const scores = await storageService.getUserScores(userId);
-    if (scores) {
-      res.status(200).json(scores);
+    const state = await storageService.getUserState(userId);
+    if (state) {
+      res.status(200).json(state);
     } else {
-      res.status(404).json({ error: 'Scores not found for this user' });
+      res.status(404).json({ error: 'User state not found for this user' });
     }
   } catch (error) {
-    console.error('Get scores error:', error);
+    console.error('Get state error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 }; 

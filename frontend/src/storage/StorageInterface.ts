@@ -1,9 +1,9 @@
 import { WordAttempt } from '../types/history';
-import { UserScores } from '../types/scores';
+import { UserState } from '../types/scores';
  
 export interface StorageInterface {
   saveAttempt(attempt: WordAttempt): Promise<void>;
-  saveUserScores(scores: UserScores): Promise<void>;
-  getUserScores(): Promise<UserScores | null>;
+  saveUserState(state: UserState): Promise<void>;
+  getUserState(): Promise<UserState | null>;
   getAllAttempts(): Promise<WordAttempt[]>;
 }

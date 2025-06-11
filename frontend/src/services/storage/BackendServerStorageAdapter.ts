@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { StorageInterface } from '../../storage/StorageInterface';
 import { WordAttempt } from '../../types/history';
-import { UserScores } from '../../types/scores';
+import { UserState } from '../../types/scores';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
 
@@ -36,18 +36,18 @@ export class BackendServerStorageAdapter implements StorageInterface {
     }
   }
 
-  async saveUserScores(scores: UserScores): Promise<void> {
+  async saveUserState(state: UserState): Promise<void> {
     try {
-      await axiosInstance.post('/storage/scores', scores);
+      await axiosInstance.post('/storage/scores', state);
     } catch (error) {
       console.error('Failed to save user scores to backend:', error);
       throw new Error('Failed to save user scores.');
     }
   }
 
-  async getUserScores(): Promise<UserScores | null> {
+  async getUserState(): Promise<UserState | null> {
     try {
-      const response = await axiosInstance.get<UserScores>('/storage/scores');
+      const response = await axiosInstance.get<UserState>('/storage/scores');
       return response.data;
     } catch (error) {
       console.error('Failed to get user scores from backend:', error);

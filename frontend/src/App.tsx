@@ -60,22 +60,22 @@ function App() {
   });
 
   // Load user progress data
-  useEffect(() => {
-    const loadUserProgress = async () => {
-      try {
-        const scores = await storageInstance.getUserScores();
-        if (scores) {
-          setUserProgress({
-            accuracyPoints: scores.accuracyPoints,
-            speedPoints: scores.speedPoints,
-            ownedItems: [] // scores.ownedItems || []
-          });
-        }
-      } catch (error) {
-        console.error('Failed to load user progress:', error);
+  const loadUserProgress = async () => {
+    try {
+      const state = await storageInstance.getUserState();
+      if (state) {
+        setUserProgress({
+          accuracyPoints: state.accuracyPoints,
+          speedPoints: state.speedPoints,
+          ownedItems: state.ownedItems || []
+        });
       }
-    };
+    } catch (error) {
+      console.error('Failed to load user progress:', error);
+    }
+  };
 
+  useEffect(() => {
     loadUserProgress();
   }, []);
 
@@ -95,9 +95,10 @@ function App() {
           ownedItems: [...userProgress.ownedItems, itemId]
         };
 
-        await storageInstance.saveUserScores({
+        await storageInstance.saveUserState({
           accuracyPoints: newProgress.accuracyPoints,
           speedPoints: newProgress.speedPoints,
+          ownedItems: newProgress.ownedItems,
           timestamp: Date.now()
         });
 
@@ -125,9 +126,10 @@ function App() {
         ownedItems: userProgress.ownedItems.filter(id => id !== itemId)
       };
 
-      await storageInstance.saveUserScores({
+      await storageInstance.saveUserState({
         accuracyPoints: newProgress.accuracyPoints,
         speedPoints: newProgress.speedPoints,
+        ownedItems: newProgress.ownedItems,
         timestamp: Date.now()
       });
 
@@ -153,7 +155,7 @@ function App() {
                     <main className="app-main">
                       <Routes>
                         <Route path="/" element={<Home />} />
-                        <Route path="/vocabulary" element={<VocabularyLesson />} />
+                        <Route path="/vocabulary" element={<VocabularyLesson onScoresUpdated={loadUserProgress} />} />
                         <Route path="/scores" element={<Scores userProgress={userProgress} />} />
                         <Route path="/statistics" element={<Statistics />} />
                         <Route

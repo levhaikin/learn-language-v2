@@ -2,8 +2,8 @@ import express, { Request, Response, NextFunction } from 'express';
 import {
   saveAttempt,
   getAttempts,
-  saveScores,
-  getScores,
+  saveState,
+  getState,
 } from '../controllers/storageController';
 import { authenticateToken } from '../middleware/authMiddleware';
 
@@ -20,7 +20,7 @@ router.use(protectedRoute);
 // Define the routes
 router.post('/attempts', saveAttempt);
 router.get('/attempts', getAttempts);
-router.post('/scores', saveScores);
-router.get('/scores', getScores);
+router.post('/scores', saveState);
+router.get('/scores', getState);
 
 export default router; 

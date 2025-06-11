@@ -1,5 +1,5 @@
 import { WordAttempt } from '../types/history';
-import { UserScores } from '../types/scores';
+import { UserState } from '../types/scores';
 import { StorageInterface } from './StorageInterface';
 
 interface LocalStorageOptions {
@@ -33,10 +33,10 @@ export class LocalStorageAdapter implements StorageInterface {
     }
   }
 
-  async saveUserScores(scores: UserScores): Promise<void> {
+  async saveUserState(state: UserState): Promise<void> {
     try {
       localStorage.setItem(this.scoresKey, JSON.stringify({
-        ...scores,
+        ...state,
         lastUpdated: Date.now() // Ensure the timestamp is current
       }));
     } catch (error) {
@@ -45,7 +45,7 @@ export class LocalStorageAdapter implements StorageInterface {
     }
   }
 
-  async getUserScores(): Promise<UserScores | null> {
+  async getUserState(): Promise<UserState | null> {
     try {
       const data = localStorage.getItem(this.scoresKey);
       return data ? JSON.parse(data) : null;
