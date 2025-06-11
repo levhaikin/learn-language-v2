@@ -107,14 +107,13 @@ export const signin = async (req: Request, res: Response): Promise<void> => {
 export const refreshToken = async (req: Request, res: Response): Promise<void> => {
   try {
     const refreshToken = req.cookies.refreshToken;
-
     if (!refreshToken) {
       res.status(401).json({ error: 'Refresh token is required' });
       return;
     }
 
     const result = await userService.refreshToken(refreshToken);
-
+    
     if (!result.success) {
       res.status(401).json({ error: 'Invalid or expired refresh token' });
       return;
@@ -125,6 +124,8 @@ export const refreshToken = async (req: Request, res: Response): Promise<void> =
       ...cookieOptions,
       maxAge: 15 * 60 * 1000 // 15 minutes
     });
+    // lhaikin: TODO: check if this is according to protocol
+    res.cookie('refreshToken', result.refreshToken, cookieOptions);
 
     res.status(200).json({
       success: true,
