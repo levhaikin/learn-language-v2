@@ -160,7 +160,7 @@ const VocabularyLesson: React.FC<VocabularyLessonProps> = ({ onScoresUpdated }) 
         <div className="word-card-container">
           <div className="word-card">
             <Timer isRunning={isTimerRunning} startTime={startTime} />
-            <h2>{currentWord.word}</h2>
+            {/* Word is hidden to prompt recall */}
             {imageLoading ? (
               <div className="image-placeholder">Loading image...</div>
             ) : (
