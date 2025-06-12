@@ -36,19 +36,9 @@ export const storeItems: StoreItem[] = [
     },
   },
   {
-    id: 'unicorn',
-    name: 'Grammar Unicorn',
-    image: '🦄',
-    description: 'A magical unicorn that helps you perfect your grammar',
-    price: {
-      accuracyPoints: 200,
-      speedPoints: 100,
-    },
-  },
-  {
     id: 'harry',
     name: 'Harry Potter',
-    image: '⚡',
+    image: '/icons/thunder.png',
     description: 'The Boy Who Lived, ready to help you master English spells!',
     price: {
       accuracyPoints: 250,
@@ -58,7 +48,7 @@ export const storeItems: StoreItem[] = [
   {
     id: 'percy',
     name: 'Percy Jackson',
-    image: '🌊',
+    image: '/icons/wave.png',
     description: 'Son of Poseidon, making learning English as epic as Greek myths!',
     price: {
       accuracyPoints: 300,
@@ -68,7 +58,7 @@ export const storeItems: StoreItem[] = [
   {
     id: 'captain',
     name: 'Captain Underpants',
-    image: '🦸‍♂️',
+    image: '/icons/underwear.png',
     description: 'The superhero who makes learning English super fun!',
     price: {
       accuracyPoints: 175,
@@ -78,7 +68,7 @@ export const storeItems: StoreItem[] = [
   {
     id: 'mask',
     name: 'The Mask',
-    image: '😈',
+    image: '/icons/mask.png',
     description: 'SMOKIN\'! This character makes learning English wild and wacky!',
     price: {
       accuracyPoints: 225,
@@ -88,7 +78,7 @@ export const storeItems: StoreItem[] = [
   {
     id: 'steve',
     name: 'Steve from Minecraft',
-    image: '⛏️',
+    image: '/icons/tools.png',
     description: 'Ready to mine for knowledge and craft perfect sentences!',
     price: {
       accuracyPoints: 275,
