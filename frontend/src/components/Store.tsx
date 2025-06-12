@@ -8,7 +8,7 @@ export const storeItems: StoreItem[] = [
   {
     id: 'wizard',
     name: 'Wise Wizard',
-    image: '🧙‍♂️',
+    image: '/icons/wizard.png',
     description: 'A magical character that helps you learn spells (words)',
     price: {
       accuracyPoints: 100,
@@ -160,7 +160,13 @@ const Store: React.FC<StoreProps> = ({ userProgress, onPurchase, onSell }) => {
 
             return (
               <div key={item.id} className="store-item">
-                <div className="item-image">{item.image}</div>
+                <div className="item-image">
+                  {item.image.startsWith('/') ? (
+                    <img src={item.image} alt={item.name} style={{ width: '64px', height: '64px', objectFit: 'contain' }} />
+                  ) : (
+                    item.image
+                  )}
+                </div>
                 <h3>{item.name}</h3>
                 <p>{item.description}</p>
                 <div className="item-price">
