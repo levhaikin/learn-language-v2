@@ -111,7 +111,6 @@ const VocabularyLesson: React.FC<VocabularyLessonProps> = ({ onScoresUpdated }) 
     e.preventDefault();
     if (showMeaning) return;
 
-    setIsTimerRunning(false);
     const currentWord = words[currentWordIndex];
     const isAnswerCorrect = inputValue.trim().toLowerCase() === currentWord.word.toLowerCase();
     const timeTaken = Date.now() - startTime;
@@ -189,6 +188,11 @@ const VocabularyLesson: React.FC<VocabularyLessonProps> = ({ onScoresUpdated }) 
       setShowMeaning(true);
     }
     setIsCorrect(isAnswerCorrect);
+
+    // Stop timer only when the answer is correct; otherwise keep it running for additional attempts
+    if (isAnswerCorrect) {
+      setIsTimerRunning(false);
+    }
   };
 
   const handleHint = () => {
