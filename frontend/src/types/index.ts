@@ -26,6 +26,10 @@ export interface StoreItem {
     accuracyPoints: number;
     speedPoints: number;
   };
+  bonus?: {
+    accuracyPoints?: number;
+    speedPoints?: number;
+  };
 }
 
 export interface UserProgress {

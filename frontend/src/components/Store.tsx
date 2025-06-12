@@ -14,6 +14,10 @@ export const storeItems: StoreItem[] = [
       accuracyPoints: 100,
       speedPoints: 50,
     },
+    bonus: {
+      accuracyPoints: 2,
+      speedPoints: 1,
+    },
   },
   {
     id: 'wooden-stick',
@@ -23,6 +27,10 @@ export const storeItems: StoreItem[] = [
     price: {
       accuracyPoints: 50,
       speedPoints: 25,
+    },
+    bonus: {
+      accuracyPoints: 1,
+      speedPoints: 0,
     },
   },
   {
@@ -34,6 +42,10 @@ export const storeItems: StoreItem[] = [
       accuracyPoints: 150,
       speedPoints: 75,
     },
+    bonus: {
+      accuracyPoints: 0,
+      speedPoints: 3,
+    },
   },
   {
     id: 'harry',
@@ -43,6 +55,10 @@ export const storeItems: StoreItem[] = [
     price: {
       accuracyPoints: 250,
       speedPoints: 125,
+    },
+    bonus: {
+      accuracyPoints: 4,
+      speedPoints: 2,
     },
   },
   {
@@ -54,6 +70,10 @@ export const storeItems: StoreItem[] = [
       accuracyPoints: 300,
       speedPoints: 150,
     },
+    bonus: {
+      accuracyPoints: 2,
+      speedPoints: 4,
+    },
   },
   {
     id: 'captain',
@@ -63,6 +83,10 @@ export const storeItems: StoreItem[] = [
     price: {
       accuracyPoints: 175,
       speedPoints: 75,
+    },
+    bonus: {
+      accuracyPoints: 1,
+      speedPoints: 2,
     },
   },
   {
@@ -74,6 +98,10 @@ export const storeItems: StoreItem[] = [
       accuracyPoints: 225,
       speedPoints: 100,
     },
+    bonus: {
+      accuracyPoints: 3,
+      speedPoints: 1,
+    },
   },
   {
     id: 'steve',
@@ -83,6 +111,10 @@ export const storeItems: StoreItem[] = [
     price: {
       accuracyPoints: 275,
       speedPoints: 125,
+    },
+    bonus: {
+      accuracyPoints: 2,
+      speedPoints: 2,
     },
   },
 ];
@@ -146,7 +178,6 @@ const Store: React.FC<StoreProps> = ({ userProgress, onPurchase, onSell }) => {
     <div className={`store-drawer ${!isOpen ? 'closed' : ''}`}>
       <button className="store-drawer-tab" onClick={toggleDrawer}>
         <span>Character Store 🏪</span>
-        <span className="arrow">{isOpen ? '↓' : '↑'}</span>
       </button>
       <div className="store">
         <h2>🏪 Character Store</h2>
@@ -195,6 +226,19 @@ const Store: React.FC<StoreProps> = ({ userProgress, onPurchase, onSell }) => {
                 </div>
                 <h3>{item.name}</h3>
                 <p>{item.description}</p>
+
+                {item.bonus && (item.bonus.accuracyPoints || item.bonus.speedPoints) ? (
+                  <div className="item-bonus" style={{ marginBottom: '8px', fontSize: '0.8rem', color: '#2e7d32' }}>
+                    <p style={{ margin: 0 }}>Bonus:</p>
+                    {item.bonus.accuracyPoints ? (
+                      <p style={{ margin: 0 }}>+⭐ {item.bonus.accuracyPoints}</p>
+                    ) : null}
+                    {item.bonus.speedPoints ? (
+                      <p style={{ margin: 0 }}>+⚡ {item.bonus.speedPoints}</p>
+                    ) : null}
+                  </div>
+                ) : null}
+
                 <div className="item-price">
                   {isOwned ? (
                     <>

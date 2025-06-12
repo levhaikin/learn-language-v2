@@ -7,10 +7,11 @@ import { TextField, Button, Box, Stack } from '@mui/material';
 import { storageInstance } from '../storage/storageInstance';
 import { WordAttempt } from '../types/history';
 import { getNextWordIndex } from '../utils/wordSampling';
-import { WordStats } from '../types';
+import { WordStats, StoreItem } from '../types';
 import { useSound } from '../hooks/useSound';
 import successSound from '../assets/sounds/yay-6120.mp3';
 import failSound from '../assets/sounds/french-horn-voice-fx-bad-joke-101443.mp3';
+import { storeItems } from './Store';
 
 interface VocabularyLessonProps {
   onScoresUpdated?: () => void;
@@ -158,10 +159,28 @@ const VocabularyLesson: React.FC<VocabularyLessonProps> = ({ onScoresUpdated }) 
       // Update user scores if correct
       if (isAnswerCorrect) {
         const currentState = await storageInstance.getUserState();
+
+        // Calculate bonus from owned items
+        const owned = currentState?.ownedItems || [];
+        const bonusTotals = owned.reduce(
+          (acc, id) => {
+            const item = storeItems.find((s) => s.id === id);
+            if (item && item.bonus) {
+              acc.accuracy += item.bonus.accuracyPoints ?? 0;
+              acc.speed += item.bonus.speedPoints ?? 0;
+            }
+            return acc;
+          },
+          { accuracy: 0, speed: 0 }
+        );
+
+        const finalAccuracy = accuracyPoints + bonusTotals.accuracy;
+        const finalSpeed = speedPoints + bonusTotals.speed;
+
         const newState = {
-          accuracyPoints: (currentState?.accuracyPoints || 0) + accuracyPoints,
-          speedPoints: (currentState?.speedPoints || 0) + speedPoints,
-          ownedItems: currentState?.ownedItems || [],
+          accuracyPoints: (currentState?.accuracyPoints || 0) + finalAccuracy,
+          speedPoints: (currentState?.speedPoints || 0) + finalSpeed,
+          ownedItems: owned,
           timestamp: Date.now()
         };
         
@@ -170,7 +189,7 @@ const VocabularyLesson: React.FC<VocabularyLessonProps> = ({ onScoresUpdated }) 
         // Notify App.tsx that scores were updated
         onScoresUpdated?.();
         
-        setEarnedPoints({ accuracy: accuracyPoints, speed: speedPoints });
+        setEarnedPoints({ accuracy: finalAccuracy, speed: finalSpeed });
         setShowPopup(true);
         setTimeout(() => setShowPopup(false), 2000);
         playSuccess();
