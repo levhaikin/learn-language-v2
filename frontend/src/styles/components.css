@@ -2,7 +2,6 @@
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
-  padding-bottom: 300px; /* Adjust this value based on your store height */
 }
 
 .points-summary {
@@ -318,7 +317,7 @@
 .app-main {
   flex: 1;
   padding: 20px;
-  padding-bottom: 300px; /* Space for store drawer */
+  /* padding-bottom: 300px; Space for store drawer */
   margin-top: calc(48px + 90px); /* ProgressHeader height + Navigation height */
 }
 
