@@ -80,8 +80,6 @@ const VocabularyLesson: React.FC<VocabularyLessonProps> = ({ onScoresUpdated }) 
     setIsTimerRunning(false);
     const currentWord = words[currentWordIndex];
     const isAnswerCorrect = inputValue.trim().toLowerCase() === currentWord.word.toLowerCase();
-    console.log(inputValue);
-    console.log(currentWord);
     const timeTaken = Date.now() - startTime;
 
     // Calculate points
