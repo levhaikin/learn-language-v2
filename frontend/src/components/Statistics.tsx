@@ -3,6 +3,7 @@ import { WordStats } from '../types';
 import WrongAttemptsPlot from './WrongAttemptsPlot';
 import { storageInstance } from '../storage/storageInstance';
 import { WordAttempt } from '../types/history';
+import { Card, CardContent, CardHeader } from '@mui/material';
 
 interface StatisticsProps {}
 
@@ -148,7 +149,12 @@ const Statistics: React.FC<StatisticsProps> = () => {
   return (
     <div className="statistics">
       <h1>Word Statistics</h1>
-      <WrongAttemptsPlot />
+      <Card sx={{ maxWidth: 700, margin: '0 auto', mb: 3 }}>
+        <CardHeader title="Wrong Attempts Trend" />
+        <CardContent>
+          <WrongAttemptsPlot />
+        </CardContent>
+      </Card>
       {Object.keys(wordStats).length > 0 ? (
         <div className="stats-table-container">
           <table className="stats-table">

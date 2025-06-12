@@ -8,6 +8,9 @@ import { storageInstance } from '../storage/storageInstance';
 import { WordAttempt } from '../types/history';
 import { getNextWordIndex } from '../utils/wordSampling';
 import { WordStats } from '../types';
+import { useSound } from '../hooks/useSound';
+import successSound from '../assets/sounds/yay-6120.mp3';
+import failSound from '../assets/sounds/french-horn-voice-fx-bad-joke-101443.mp3';
 
 interface VocabularyLessonProps {
   onScoresUpdated?: () => void;
@@ -30,6 +33,10 @@ const VocabularyLesson: React.FC<VocabularyLessonProps> = ({ onScoresUpdated }) 
   const [isTimerRunning, setIsTimerRunning] = useState(true);
 
   const [wordStats, setWordStats] = useState<{ [key: string]: WordStats }>({});
+
+  // Sound hooks
+  const { play: playSuccess } = useSound(successSound);
+  const { play: playFail } = useSound(failSound);
 
   const fetchWords = async () => {
     try {
@@ -167,10 +174,12 @@ const VocabularyLesson: React.FC<VocabularyLessonProps> = ({ onScoresUpdated }) 
         setEarnedPoints({ accuracy: accuracyPoints, speed: speedPoints });
         setShowPopup(true);
         setTimeout(() => setShowPopup(false), 2000);
+        playSuccess();
       } else {
         // incorrect answer feedback
         setShowWrongPopup(true);
         setTimeout(() => setShowWrongPopup(false), 1500);
+        playFail();
       }
     } catch (error) {
       console.error('Failed to save attempt or update scores:', error);
