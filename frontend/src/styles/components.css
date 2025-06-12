@@ -860,4 +860,17 @@
 
 .lesson-controls {
   margin-top: 1rem;
+}
+
+@keyframes spin360 {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.item-image.spin {
+  animation: spin360 0.8s ease-in-out;
 } 

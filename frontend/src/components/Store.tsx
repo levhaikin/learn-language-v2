@@ -96,6 +96,7 @@ interface StoreProps {
 const Store: React.FC<StoreProps> = ({ userProgress, onPurchase, onSell }) => {
   const storeItemsRef = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [spinningItems, setSpinningItems] = useState<Set<string>>(new Set());
   const { play: playOpen } = useSound(openSwoosh);
   const { play: playClose } = useSound(closeSwoosh);
 
@@ -160,7 +161,19 @@ const Store: React.FC<StoreProps> = ({ userProgress, onPurchase, onSell }) => {
 
             return (
               <div key={item.id} className="store-item">
-                <div className="item-image">
+                <div
+                  className={`item-image ${spinningItems.has(item.id) ? 'spin' : ''}`}
+                  onClick={() => {
+                    setSpinningItems(prev => new Set(prev).add(item.id));
+                  }}
+                  onAnimationEnd={() => {
+                    setSpinningItems(prev => {
+                      const updated = new Set(prev);
+                      updated.delete(item.id);
+                      return updated;
+                    });
+                  }}
+                >
                   {item.image.startsWith('/') ? (
                     <img src={item.image} alt={item.name} style={{ width: '64px', height: '64px', objectFit: 'contain' }} />
                   ) : (
