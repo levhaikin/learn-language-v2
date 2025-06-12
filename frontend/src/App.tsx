@@ -14,6 +14,7 @@ import AuthPage from './pages/Auth/AuthPage';
 import { useAuth } from './hooks/useAuth';
 import { storageInstance } from './storage/storageInstance';
 import { UserProgress } from './types';
+import Footer from './components/Footer';
 
 const sampleWords = [
   { word: "Hello", translation: "Hola", category: "Greetings" },
@@ -172,6 +173,8 @@ function App() {
                       onPurchase={handlePurchase}
                       onSell={handleSell}
                     />
+
+                    <Footer />
                   </div>
                 </ProtectedRoute>
               }
