@@ -6,6 +6,8 @@ import WrongPopup from './WrongPopup';
 import { TextField, Button, Box, Stack } from '@mui/material';
 import { storageInstance } from '../storage/storageInstance';
 import { WordAttempt } from '../types/history';
+import { getNextWordIndex } from '../utils/wordSampling';
+import { WordStats } from '../types';
 
 interface VocabularyLessonProps {
   onScoresUpdated?: () => void;
@@ -27,6 +29,8 @@ const VocabularyLesson: React.FC<VocabularyLessonProps> = ({ onScoresUpdated }) 
   const [startTime, setStartTime] = useState(0);
   const [isTimerRunning, setIsTimerRunning] = useState(true);
 
+  const [wordStats, setWordStats] = useState<{ [key: string]: WordStats }>({});
+
   const fetchWords = async () => {
     try {
       const allWords = await api.vocabulary.getAll();
@@ -36,6 +40,25 @@ const VocabularyLesson: React.FC<VocabularyLessonProps> = ({ onScoresUpdated }) 
         setStartTime(Date.now());
         setIsTimerRunning(true);
       }
+
+      // Load attempts to build word statistics
+      const attempts = await storageInstance.getAllAttempts();
+      const stats: { [key: string]: WordStats } = {};
+      attempts.forEach((attempt) => {
+        const { word, isCorrect, timeTaken } = attempt;
+        if (!stats[word]) {
+          stats[word] = {
+            word,
+            attempts: 0,
+            correctAttempts: 0,
+            attemptTimes: [],
+          };
+        }
+        stats[word].attempts += 1;
+        if (isCorrect) stats[word].correctAttempts += 1;
+        stats[word].attemptTimes.push(timeTaken);
+      });
+      setWordStats(stats);
     } catch (error) {
       console.error('Failed to fetch words', error);
     }
@@ -64,8 +87,12 @@ const VocabularyLesson: React.FC<VocabularyLessonProps> = ({ onScoresUpdated }) 
     setInputValue('');
     setIsCorrect(null);
     setShowHint(false);
-    const nextIndex = currentWordIndex + 1;
-    if (nextIndex < words.length) {
+
+    if (words.length === 0) return;
+
+    // Cast words to generic type accepted by util to avoid type mismatch between different Word definitions
+    const nextIndex = getNextWordIndex(words as any, wordStats, currentWordIndex);
+    if (nextIndex >= 0 && nextIndex < words.length) {
       setCurrentWordIndex(nextIndex);
       fetchWordImage(words[nextIndex].word);
       setStartTime(Date.now());
@@ -104,6 +131,23 @@ const VocabularyLesson: React.FC<VocabularyLessonProps> = ({ onScoresUpdated }) 
     try {
       // Save the attempt
       await storageInstance.saveAttempt(attempt);
+
+      // Update local wordStats state
+      setWordStats(prev => {
+        const updated = { ...prev };
+        if (!updated[currentWord.word]) {
+          updated[currentWord.word] = {
+            word: currentWord.word,
+            attempts: 0,
+            correctAttempts: 0,
+            attemptTimes: [],
+          };
+        }
+        updated[currentWord.word].attempts += 1;
+        if (isAnswerCorrect) updated[currentWord.word].correctAttempts += 1;
+        updated[currentWord.word].attemptTimes.push(timeTaken);
+        return updated;
+      });
 
       // Update user scores if correct
       if (isAnswerCorrect) {
