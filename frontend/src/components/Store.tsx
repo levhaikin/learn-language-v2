@@ -1,7 +1,8 @@
 import React, { useRef, useState } from 'react';
 import { StoreItem, UserProgress } from '../types';
 import { useSound } from '../hooks/useSound';
-import { swooshSound } from '../assets/sounds/swoosh';
+import openSwoosh from '../assets/sounds/swoosh-sound-effect-for-fight-scenes-or-transitions-1-149889.mp3';
+import closeSwoosh from '../assets/sounds/swoosh-sound-effect-for-fight-scenes-or-transitions-3-149888.mp3';
 
 export const storeItems: StoreItem[] = [
   {
@@ -95,7 +96,8 @@ interface StoreProps {
 const Store: React.FC<StoreProps> = ({ userProgress, onPurchase, onSell }) => {
   const storeItemsRef = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState(false);
-  const { play: playSwoosh } = useSound(swooshSound);
+  const { play: playOpen } = useSound(openSwoosh);
+  const { play: playClose } = useSound(closeSwoosh);
 
   const canAfford = (item: StoreItem) => {
     return (
@@ -131,8 +133,12 @@ const Store: React.FC<StoreProps> = ({ userProgress, onPurchase, onSell }) => {
   };
 
   const toggleDrawer = () => {
+    if (isOpen) {
+      playClose();
+    } else {
+      playOpen();
+    }
     setIsOpen(!isOpen);
-    playSwoosh();
   };
 
   return (
