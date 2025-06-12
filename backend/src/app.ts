@@ -10,6 +10,7 @@ import authRoutes from './routes/authRoutes';
 import vocabularyRoutes from './routes/vocabulary';
 import imageRoutes from './routes/images';
 import storageRoutes from './routes/storageRoutes';
+import healthRoutes from './routes/healthRoutes';
 
 // Load environment variables
 config();
@@ -35,6 +36,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/vocabulary', vocabularyRoutes);
 app.use('/api/images', imageRoutes);
 app.use('/api/storage', storageRoutes);
+app.use('/api/health', healthRoutes);
 
 // Root path
 app.get('/', (req, res) => {
