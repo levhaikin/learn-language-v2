@@ -141,6 +141,13 @@ export const refreshToken = async (req: Request, res: Response): Promise<void> =
 
 export const logout = async (req: Request, res: Response): Promise<void> => {
   try {
+
+    // Clear cookies
+    res.clearCookie('accessToken', cookieOptions);
+    res.clearCookie('refreshToken', cookieOptions);
+
+    // console.log(req.user);
+
     const userId = req.user?.userId;
     
     if (!userId) {
@@ -149,10 +156,6 @@ export const logout = async (req: Request, res: Response): Promise<void> => {
     }
 
     await userService.logout(userId);
-
-    // Clear cookies
-    res.clearCookie('accessToken', cookieOptions);
-    res.clearCookie('refreshToken', cookieOptions);
 
     res.status(200).json({ message: 'Successfully logged out' });
   } catch (error) {
