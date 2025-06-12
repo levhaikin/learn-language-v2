@@ -154,7 +154,20 @@ const Store: React.FC<StoreProps> = ({ userProgress, onPurchase, onSell }) => {
           <p>⭐ {userProgress.accuracyPoints} Accuracy Points</p>
           <p>⚡ {userProgress.speedPoints} Speed Points</p>
         </div>
-        <div className="store-items" ref={storeItemsRef}>
+        <div
+          className="store-items"
+          ref={storeItemsRef}
+          onWheel={(e) => {
+            if (!storeItemsRef.current) return;
+            // Prevent vertical page scroll when hovering over the store items
+            e.preventDefault();
+            storeItemsRef.current.scrollBy({
+              left: e.deltaY < 0 ? -500 : 500,
+              behavior: 'smooth',
+            });
+          }}
+          style={{ overflowY: 'hidden' }}
+        >
           {storeItems.map((item) => {
             const isOwned = userProgress.ownedItems.includes(item.id);
             const sellPrice = getSellPrice(item);
