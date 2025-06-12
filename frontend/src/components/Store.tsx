@@ -16,9 +16,19 @@ export const storeItems: StoreItem[] = [
     },
   },
   {
+    id: 'wooden-stick',
+    name: 'Wooden Stick',
+    image: '/icons/wooden-stick.png',
+    description: 'A trusty wooden stick to help you poke at difficult words',
+    price: {
+      accuracyPoints: 50,
+      speedPoints: 25,
+    },
+  },
+  {
     id: 'dragon',
     name: 'Friendly Dragon',
-    image: '🐉',
+    image: '/icons/dragon.png',
     description: 'A dragon that breathes knowledge instead of fire',
     price: {
       accuracyPoints: 150,
